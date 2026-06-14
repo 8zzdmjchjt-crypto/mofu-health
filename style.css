@@ -89,3 +89,60 @@ canvas{width:100%;background:#fff;border:1px solid var(--line);border-radius:24p
   font-weight:900;
   font-size:15px;
 }
+
+
+/* v1.3.1 layout fix */
+header{
+  min-height:92px !important;
+  padding:18px 18px 14px !important;
+}
+
+header > div:first-child{
+  display:block !important;
+  min-width:0 !important;
+}
+
+.brand{
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+}
+
+.sub{
+  line-height:1.35 !important;
+  margin-top:4px !important;
+  white-space:nowrap !important;
+}
+
+.pet-mini{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:14px !important;
+  min-height:92px !important;
+}
+
+.pet-mini .avatar{
+  flex:0 0 64px !important;
+}
+
+.pet-mini > div:not(.avatar){
+  display:block !important;
+}
+
+.dangerMenu{
+  color:#d9534f !important;
+  border-color:#f2b6b6 !important;
+}
+
+.danger{
+  display:block !important;
+  width:100% !important;
+  margin-top:14px !important;
+  border:1px solid #f2a3a3 !important;
+  background:#fff !important;
+  color:#d9534f !important;
+  border-radius:16px !important;
+  padding:12px !important;
+  font-weight:900 !important;
+  font-size:15px !important;
+}

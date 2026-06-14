@@ -103,19 +103,7 @@ function renderGraph(){renderTabs("graphTabs",renderGraph);let rows=Object.value
 function draw(vals){let c=$("graph"),ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle="#d9eadf";for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(35,25+i*40);ctx.lineTo(330,25+i*40);ctx.stroke();}if(!vals.length)return;let min=Math.min(...vals)-1,max=Math.max(...vals)+1;ctx.strokeStyle="#78a98b";ctx.fillStyle="#78a98b";ctx.lineWidth=3;ctx.beginPath();vals.forEach((v,i)=>{let x=40+i*(285/Math.max(1,vals.length-1));let y=185-((v-min)/(max-min||1))*150;if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);});ctx.stroke();}
 
 
-function deleteSelectedPet(){
- const p=pet(state.selectedPet);
- if(!p)return;
- if(!confirm(p.name+"を削除しますか？\\n記録・通院・投薬データも削除されます。"))return;
- data.pets=data.pets.filter(x=>x.id!==p.id);
- Object.keys(data.records).forEach(k=>{if(data.records[k].petId===p.id)delete data.records[k];});
- data.hospitals=data.hospitals.filter(x=>x.petId!==p.id);
- data.medicines=data.medicines.filter(x=>x.petId!==p.id);
- state.selectedPet=data.pets[0]?.id||"";
- save();
- alert("削除しました");
- show("homeView");
-}
+
 
 function renderMore(){
  let p=pet(state.selectedPet);
@@ -130,3 +118,32 @@ $("resetBtn").onclick=()=>{if(confirm("すべてのデータを削除して空�
 
 if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").catch(()=>{});}
 renderHome();
+
+
+
+// v1.3.1 delete UI fix
+function deleteSelectedPet(){
+  const p = pet(state.selectedPet);
+  if(!p){
+    alert("削除するペットがいません");
+    return;
+  }
+  if(!confirm(p.name + "を削除しますか？\nこのペットの記録・通院・投薬も削除されます。")){
+    return;
+  }
+
+  data.pets = data.pets.filter(x => x.id !== p.id);
+  Object.keys(data.records).forEach(k => {
+    if(data.records[k].petId === p.id) delete data.records[k];
+  });
+  data.hospitals = data.hospitals.filter(x => x.petId !== p.id);
+  data.medicines = data.medicines.filter(x => x.petId !== p.id);
+
+  state.selectedPet = data.pets[0]?.id || "";
+  save();
+  alert("削除しました");
+  show("homeView");
+}
+
+// expose for inline onclick
+window.deleteSelectedPet = deleteSelectedPet;
