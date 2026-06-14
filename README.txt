@@ -1,14 +1,20 @@
-MofuNote v1.2 Icon Migration + Add Fix4
+MofuNote v1.2 Clean
+
+継ぎ足し修正をやめて、v1.2を整理して作り直した完全版です。
 
 修正内容:
-- 既存の絵文字アイコンを小動物イラストアイコンへ自動変換
-- ペット追加後にホームへ即時反映
-- 追加後にメッセージ表示
-- キャッシュ名を変更
+- ペット追加が確実に動作
+- 小動物アイコン画像を標準表示
+- 写真登録
+- アイコン選択
+- 通院記録
+- 投薬記録
+- お迎え記念日
+- グラフ
 
-確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=iconfix4
-
-もし古い表示が残る場合:
-その他 → サンプルに戻す
-を押すと、初期データも新しいアイコンに変わります。
+GitHub更新方法:
+1. ZIPを解凍
+2. 中の全ファイルを mofu-health に上書きアップロード
+3. Commit changes
+4. Safariで https://8zzdmjchjt-crypto.github.io/mofu-health/?v=clean12 を開く
+5. うまく反映しない場合は「その他 → サンプルに戻す」
