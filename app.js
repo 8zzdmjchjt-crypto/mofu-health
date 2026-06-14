@@ -309,3 +309,84 @@ function showToast(msg){
  t.textContent=msg;
  setTimeout(()=>t.remove(),1500);
 }
+
+
+
+// v1.7.1 save feedback fix
+function showToast(message){
+  let t = document.getElementById("toast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "toast";
+    document.body.appendChild(t);
+  }
+  t.textContent = message;
+  t.className = "show";
+  setTimeout(() => { t.className = ""; }, 1800);
+}
+
+function wrapFormFeedback(){
+  const recordForm = document.getElementById("recordForm");
+  if(recordForm && !recordForm.dataset.feedbackFixed){
+    recordForm.dataset.feedbackFixed = "1";
+    recordForm.addEventListener("submit", () => {
+      setTimeout(() => showToast("記録を保存しました✅"), 120);
+    });
+  }
+
+  const hospitalForm = document.getElementById("hospitalForm");
+  if(hospitalForm && !hospitalForm.dataset.feedbackFixed){
+    hospitalForm.dataset.feedbackFixed = "1";
+    hospitalForm.addEventListener("submit", () => {
+      setTimeout(() => showToast("通院記録を保存しました✅"), 120);
+    });
+  }
+
+  const medicineForm = document.getElementById("medicineForm");
+  if(medicineForm && !medicineForm.dataset.feedbackFixed){
+    medicineForm.dataset.feedbackFixed = "1";
+    medicineForm.addEventListener("submit", () => {
+      setTimeout(() => showToast("投薬記録を保存しました✅"), 120);
+    });
+  }
+
+  const saveProfile = document.getElementById("saveProfile");
+  if(saveProfile && !saveProfile.dataset.feedbackFixed){
+    saveProfile.dataset.feedbackFixed = "1";
+    saveProfile.addEventListener("click", () => {
+      setTimeout(() => showToast("プロフィールを保存しました✅"), 120);
+    });
+  }
+
+  const addPet = document.getElementById("addPet");
+  if(addPet && !addPet.dataset.feedbackFixed){
+    addPet.dataset.feedbackFixed = "1";
+    addPet.addEventListener("click", () => {
+      const name = document.getElementById("newName")?.value?.trim() || "ペット";
+      setTimeout(() => showToast(name + "を追加しました🐾"), 120);
+    });
+  }
+}
+
+window.addEventListener("load", wrapFormFeedback);
+setTimeout(wrapFormFeedback, 500);
+
+if(typeof show === "function"){
+  const originalShowForFeedback = show;
+  show = function(view){
+    originalShowForFeedback(view);
+    setTimeout(wrapFormFeedback, 100);
+  };
+}
+
+if(typeof deleteSelectedPet === "function"){
+  const originalDeleteSelectedPet = deleteSelectedPet;
+  deleteSelectedPet = function(){
+    const p = typeof pet === "function" ? pet(state.selectedPet) : null;
+    originalDeleteSelectedPet();
+    setTimeout(() => {
+      if(p) showToast(p.name + "を削除しました🗑️");
+    }, 200);
+  };
+  window.deleteSelectedPet = deleteSelectedPet;
+}
