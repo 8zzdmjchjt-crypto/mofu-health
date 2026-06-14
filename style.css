@@ -68,3 +68,24 @@ canvas{width:100%;background:#fff;border:1px solid var(--line);border-radius:24p
   max-width:100%;
   overflow:hidden;
 }
+
+.empty{
+  padding:20px;
+  text-align:center;
+  color:var(--deep);
+}
+.empty p{
+  color:#75877b;
+  line-height:1.6;
+}
+.danger{
+  width:100%;
+  margin-top:14px;
+  border:1px solid #f2a3a3;
+  background:#fff;
+  color:#d9534f;
+  border-radius:16px;
+  padding:12px;
+  font-weight:900;
+  font-size:15px;
+}
