@@ -75,7 +75,53 @@ function drawGraph(rows, unit){const c=$("graph"),ctx=c.getContext("2d");ctx.cle
 
 function renderMore(){const p=pet(state.selectedPet);$("annivBox").innerHTML=`<div><b>🎂 お迎え記念日</b><p>${p.name}をお迎えして<br><strong>${daysSince(p.adoptionDate)}日目です</strong></p></div><span>${p.photo?`<img src="${p.photo}" style="width:64px;height:64px;border-radius:22px;object-fit:cover">`:p.icon}</span>`;}
 
-$("addPetBtn").onclick=()=>$("petDialog").showModal();$("closePet").onclick=()=>$("petDialog").close();$("savePet").onclick=()=>{const name=$("newName").value.trim();if(!name)return;const type=$("newType").value.trim()||"小動物";pets.push({id:String(Date.now()),name,type,sex:$("newSex").value,icon:type.includes("チン")?"animal_chinchilla.png":type.includes("デグ")?"animal_degu.png":type.includes("モル")?"animal_guineapig.png":type.includes("ハム")?"animal_hamster.png":type.includes("うさ")?"animal_rabbit.png":"animal_chinchilla.png",adoptionDate:today(),photo:""});save();$("petDialog").close();renderHome();}
+$("addPetBtn").onclick=()=>{
+  $("newName").value="";
+  $("newType").value="チンチラ";
+  $("newSex").value="♀";
+  $("petDialog").showModal();
+};
+
+$("closePet").onclick=()=>{
+  document.activeElement && document.activeElement.blur();
+  $("petDialog").close();
+};
+
+$("savePet").onclick=(e)=>{
+  e.preventDefault();
+  document.activeElement && document.activeElement.blur();
+
+  const name=$("newName").value.trim();
+  if(!name){
+    alert("名前を入力してください");
+    $("newName").focus();
+    return;
+  }
+
+  const type=$("newType").value.trim()||"小動物";
+  const sex=$("newSex").value||"不明";
+  let icon="animal_chinchilla.png";
+  if(type.includes("デグ")) icon="animal_degu.png";
+  else if(type.includes("モル")) icon="animal_guineapig.png";
+  else if(type.includes("ハム")) icon="animal_hamster.png";
+  else if(type.includes("うさ")) icon="animal_rabbit.png";
+  else if(type.includes("チン")) icon="animal_chinchilla.png";
+
+  pets.push({
+    id:String(Date.now()),
+    name,
+    type,
+    sex,
+    icon,
+    adoptionDate:today(),
+    photo:""
+  });
+
+  save();
+  $("petDialog").close();
+  renderHome();
+  alert("ペットを追加しました");
+};
 $("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({pets,records,hospitals,medicines},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="mofunote_data.json";a.click();}
 $("resetBtn").onclick=()=>{localStorage.removeItem("mofunote_pets_v11");localStorage.removeItem("mofunote_records_v11");localStorage.removeItem("mofunote_hospitals_v11");localStorage.removeItem("mofunote_medicines_v11");location.reload();}
 if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").catch(()=>{});}
