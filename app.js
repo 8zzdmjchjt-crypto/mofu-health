@@ -96,7 +96,7 @@ save();
 $("petDialog").close();
 state.selectedPet=newPet.id;
 show("homeView");
-alert(name+"を追加しました");
+showToast(name+"を追加しました🐾");
 };
 
 function renderRecord(){
@@ -305,7 +305,7 @@ function deleteSelectedPet(){
 
   state.selectedPet = data.pets[0]?.id || "";
   save();
-  alert("削除しました");
+  showToast(p.name+"を削除しました🗑️");
   show("homeView");
 }
 
