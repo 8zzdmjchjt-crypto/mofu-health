@@ -1,0 +1,15 @@
+{
+  "name": "小動物健康手帳",
+  "short_name": "モフ手帳",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff8ef",
+  "theme_color": "#f06f91",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

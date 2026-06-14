@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f06f91">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>小動物健康手帳</title>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div>
+      <div class="brand">🐾 小動物健康手帳</div>
+      <div class="sub">体重・ごはん・砂浴び・部屋んぽを記録</div>
+    </div>
+    <button class="round" id="addPetBtn">＋</button>
+  </header>
+
+  <main>
+    <section class="view active" id="homeView">
+      <h2>ペット一覧</h2>
+      <div class="hero">
+        <div>
+          <b>今日の記録</b>
+          <p>体重・食欲・うんち・活動をかんたんチェック</p>
+        </div>
+        <div class="heroAnimal">🐭</div>
+      </div>
+      <div id="petList"></div>
+    </section>
+
+    <section class="view" id="calendarView">
+      <h2>カレンダー</h2>
+      <div class="monthBar">
+        <button id="prevMonth">‹</button>
+        <strong id="monthTitle"></strong>
+        <button id="nextMonth">›</button>
+      </div>
+      <div class="week"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+      <div class="calendar" id="calendar"></div>
+      <div class="legend"><span>● 記録</span><span>● 写真</span><span>● 活動</span></div>
+      <h3 id="dayTitle">今日の記録</h3>
+      <div id="dayRecords"></div>
+    </section>
+
+    <section class="view" id="recordView">
+      <h2>記録をつける</h2>
+      <div class="petMini" id="recordPetMini"></div>
+      <form id="recordForm">
+        <label>日付<input type="date" id="date"></label>
+        <label>体重(g)<input type="number" id="weight" placeholder="540"></label>
+        <label>ペレット(g)<input type="number" id="pellet" placeholder="18"></label>
+        <label>チモシー<select id="hay"><option>よく食べた</option><option>普通</option><option>少ない</option><option>食べてない</option></select></label>
+        <label>食欲<select id="appetite"><option>◎</option><option>○</option><option>△</option><option>×</option></select></label>
+        <label>元気<select id="energy"><option>◎</option><option>○</option><option>△</option><option>×</option></select></label>
+        <label>うんち<select id="poop"><option>普通</option><option>少ない</option><option>小さい</option><option>やわらかい</option><option>出てない</option></select></label>
+
+        <h3>今日の活動</h3>
+        <label class="check"><span>砂浴び</span><input type="checkbox" id="sandBath"></label>
+        <label>砂浴び時間(分)<input type="number" id="sandMinutes" placeholder="10"></label>
+        <label class="check"><span>部屋んぽ</span><input type="checkbox" id="walk"></label>
+        <label>部屋んぽ時間(分)<input type="number" id="walkMinutes" placeholder="30"></label>
+
+        <h3>環境</h3>
+        <label>温度(℃)<input type="number" step="0.1" id="temp" placeholder="22.5"></label>
+        <label>湿度(%)<input type="number" id="humidity" placeholder="55"></label>
+        <label class="memo">メモ<textarea id="memo" placeholder="元気いっぱい。砂浴びたくさんしてた😊"></textarea></label>
+        <button type="submit" class="primary">保存</button>
+      </form>
+    </section>
+
+    <section class="view" id="graphView">
+      <h2>体重グラフ</h2>
+      <div class="petTabs" id="graphPetTabs"></div>
+      <canvas id="graph" width="350" height="240"></canvas>
+      <div class="stats">
+        <div><small>最高</small><b id="maxWeight">-</b></div>
+        <div><small>最低</small><b id="minWeight">-</b></div>
+        <div><small>変化</small><b id="diffWeight">-</b></div>
+      </div>
+    </section>
+
+    <section class="view" id="moreView">
+      <h2>その他</h2>
+      <div class="anniv">
+        <div>
+          <b>お迎え記念日</b>
+          <p>大切な家族の記念日も忘れずに。</p>
+        </div>
+        <span>🎀🐭</span>
+      </div>
+      <button class="menu" id="exportBtn">データを書き出す</button>
+      <button class="menu" id="resetBtn">サンプルに戻す</button>
+      <p class="notice">このアプリは記録用です。診断や治療の代わりにはなりません。</p>
+    </section>
+  </main>
+
+  <nav>
+    <button data-view="homeView" class="active">🏠<small>ホーム</small></button>
+    <button data-view="calendarView">📅<small>カレンダー</small></button>
+    <button data-view="recordView">✏️<small>記録</small></button>
+    <button data-view="graphView">📈<small>グラフ</small></button>
+    <button data-view="moreView">⋯<small>その他</small></button>
+  </nav>
+</div>
+
+<dialog id="petDialog">
+  <h2>ペット追加</h2>
+  <label>名前<input id="newName" placeholder="モカ"></label>
+  <label>種類<input id="newType" placeholder="チンチラ"></label>
+  <label>性別<select id="newSex"><option>♀</option><option>♂</option><option>不明</option></select></label>
+  <div class="dialogBtns">
+    <button id="closePet">閉じる</button>
+    <button id="savePet" class="primary">追加</button>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
