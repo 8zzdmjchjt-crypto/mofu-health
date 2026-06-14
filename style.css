@@ -146,3 +146,9 @@ header > div:first-child{
   font-weight:900 !important;
   font-size:15px !important;
 }
+
+/* v1.4 birthday display */
+.pet-info small{
+  display:block;
+  margin-top:2px;
+}

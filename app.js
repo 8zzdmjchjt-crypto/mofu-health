@@ -27,6 +27,35 @@ function avatar(p){return `<div class="avatar">${p.photo?`<img src="${p.photo}">
 function latest(id){return Object.values(data.records).filter(r=>r.petId===id&&r.weight).sort((a,b)=>a.date.localeCompare(b.date)).pop();}
 function daysSince(ds){if(!ds)return "-";return Math.floor((new Date()-new Date(ds+"T00:00:00"))/86400000);}
 
+function ageText(birthday){
+ if(!birthday)return "誕生日未設定";
+ const birth=new Date(birthday+"T00:00:00");
+ const now=new Date();
+ let years=now.getFullYear()-birth.getFullYear();
+ let months=now.getMonth()-birth.getMonth();
+ if(now.getDate()<birth.getDate()) months--;
+ if(months<0){years--;months+=12;}
+ if(years<0)return "誕生日未設定";
+ if(years===0 && months===0){
+   const days=Math.floor((now-birth)/86400000);
+   return "生後"+Math.max(0,days)+"日";
+ }
+ if(years===0)return months+"ヶ月";
+ return years+"歳"+months+"ヶ月";
+}
+
+function nextBirthdayText(birthday){
+ if(!birthday)return "誕生日未設定";
+ const now=new Date();
+ const b=new Date(birthday+"T00:00:00");
+ let next=new Date(now.getFullYear(), b.getMonth(), b.getDate());
+ if(next < new Date(now.getFullYear(), now.getMonth(), now.getDate())){
+   next=new Date(now.getFullYear()+1, b.getMonth(), b.getDate());
+ }
+ const days=Math.ceil((next-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+ return days===0 ? "今日が誕生日です🎉" : "誕生日まであと"+days+"日";
+}
+
 function show(view){
  if(data.pets.length===0 && !["homeView","moreView"].includes(view)){
    alert("先にペットを追加してください");
@@ -53,7 +82,7 @@ function renderHome(){
    </div>`;
    return;
  }
- $("petList").innerHTML=data.pets.map(p=>{let r=latest(p.id)||{};return `<div class="pet-card" onclick="state.selectedPet='${p.id}';show('recordView')"><div class="pet-top">${avatar(p)}<div class="pet-info"><b>${p.name} <span style="color:var(--green)">${p.sex}</span></b><br><small>${p.type}</small><br><small>お迎えから ${daysSince(p.adoptionDate)}日</small></div><div class="weight">${r.weight||"--"}g<br><small>最新</small></div></div><div class="chips"><span class="chip">食欲 ${r.appetite||"-"}</span><span class="chip">元気 ${r.energy||"-"}</span><span class="chip">うんち ${r.poop||"-"}</span>${r.sandBath?'<span class="chip">砂浴び</span>':""}${r.walk?'<span class="chip">部屋んぽ</span>':""}</div></div>`}).join("");
+ $("petList").innerHTML=data.pets.map(p=>{let r=latest(p.id)||{};return `<div class="pet-card" onclick="state.selectedPet='${p.id}';show('recordView')"><div class="pet-top">${avatar(p)}<div class="pet-info"><b>${p.name} <span style="color:var(--green)">${p.sex}</span></b><br><small>${p.type}</small><br><small>🎂 ${ageText(p.birthday)}</small></div><div class="weight">${r.weight||"--"}g<br><small>最新</small></div></div><div class="chips"><span class="chip">食欲 ${r.appetite||"-"}</span><span class="chip">元気 ${r.energy||"-"}</span><span class="chip">うんち ${r.poop||"-"}</span>${r.sandBath?'<span class="chip">砂浴び</span>':""}${r.walk?'<span class="chip">部屋んぽ</span>':""}</div></div>`}).join("");
 }
 $("openPetDialog").onclick=()=>{$("newName").value="";$("newType").value="チンチラ";$("newSex").value="♀";$("petDialog").showModal();}
 $("closePet").onclick=()=>$("petDialog").close();
@@ -61,7 +90,7 @@ $("addPet").onclick=()=>{
  const name=$("newName").value.trim(); if(!name){alert("名前を入力してください");return;}
  const type=$("newType").value.trim()||"小動物"; const sex=$("newSex").value||"不明";
  let icon="animal_chinchilla.png"; if(type.includes("デグ"))icon="animal_degu.png"; else if(type.includes("モル"))icon="animal_guineapig.png"; else if(type.includes("ハム"))icon="animal_hamster.png"; else if(type.includes("うさ"))icon="animal_rabbit.png";
- const newPet={id:"pet_"+Date.now(),name,type,sex,icon,photo:"",adoptionDate:today()};
+ const newPet={id:"pet_"+Date.now(),name,type,sex,icon,photo:"",birthday:"",adoptionDate:today()};
  data.pets.push(newPet);
 save();
 $("petDialog").close();
@@ -82,10 +111,10 @@ $("recordDate").onchange=loadRecord;
 $("recordForm").onsubmit=e=>{e.preventDefault();let ds=$("recordDate").value||today();data.records[state.selectedPet+"_"+ds]={petId:state.selectedPet,date:ds,weight:Number($("weight").value)||0,appetite:$("appetite").value,energy:$("energy").value,poop:$("poop").value,sandBath:$("sandBath").checked,sandMinutes:Number($("sandMinutes").value)||0,walk:$("walk").checked,walkMinutes:Number($("walkMinutes").value)||0,temp:Number($("temp").value)||0,humidity:Number($("humidity").value)||0,memo:$("memo").value};save();alert("保存しました");show("homeView");}
 
 function renderTabs(id, cb){$(id).innerHTML=data.pets.map(p=>`<button class="${p.id===state.selectedPet?'active':''}" data-id="${p.id}">${p.name}</button>`).join("");$(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{state.selectedPet=b.dataset.id;cb();});}
-function renderProfile(){renderTabs("profileTabs",renderProfile);let p=pet(state.selectedPet);$("profileCard").innerHTML=`<div class="profile-img">${p.photo?`<img src="${p.photo}">`:`<img src="${p.icon}">`}</div><div class="row"><span>名前</span><b>${p.name}</b></div><div class="row"><span>種類</span><b>${p.type}</b></div><div class="row"><span>性別</span><b>${p.sex}</b></div><div class="row"><span>お迎え</span><b>${p.adoptionDate||"未設定"}</b></div><button class="danger" onclick="deleteSelectedPet()">このペットを削除</button>`;$("adoptionDate").value=p.adoptionDate||"";$("iconGrid").innerHTML=iconChoices.map(i=>`<button class="${p.icon===i.file?'selectedIcon':''}" data-file="${i.file}"><img src="${i.file}">${i.label}</button>`).join("");$("iconGrid").querySelectorAll("button").forEach(b=>b.onclick=()=>{p.icon=b.dataset.file;p.photo="";save();renderProfile();renderHome();});}
+function renderProfile(){renderTabs("profileTabs",renderProfile);let p=pet(state.selectedPet);$("profileCard").innerHTML=`<div class="profile-img">${p.photo?`<img src="${p.photo}">`:`<img src="${p.icon}">`}</div><div class="row"><span>名前</span><b>${p.name}</b></div><div class="row"><span>種類</span><b>${p.type}</b></div><div class="row"><span>性別</span><b>${p.sex}</b></div><div class="row"><span>誕生日</span><b>${p.birthday||"未設定"}</b></div><div class="row"><span>年齢</span><b>${ageText(p.birthday)}</b></div><div class="row"><span>お迎え</span><b>${p.adoptionDate||"未設定"}</b></div><button class="danger" onclick="deleteSelectedPet()">このペットを削除</button>`;$("birthday").value=p.birthday||"";$("adoptionDate").value=p.adoptionDate||"";$("iconGrid").innerHTML=iconChoices.map(i=>`<button class="${p.icon===i.file?'selectedIcon':''}" data-file="${i.file}"><img src="${i.file}">${i.label}</button>`).join("");$("iconGrid").querySelectorAll("button").forEach(b=>b.onclick=()=>{p.icon=b.dataset.file;p.photo="";save();renderProfile();renderHome();});}
 $("photoInput").onchange=e=>{let f=e.target.files[0];if(!f)return;let reader=new FileReader();reader.onload=()=>{pet(state.selectedPet).photo=reader.result;save();renderProfile();renderHome();};reader.readAsDataURL(f);}
 $("removePhoto").onclick=()=>{pet(state.selectedPet).photo="";save();renderProfile();renderHome();}
-$("saveProfile").onclick=()=>{pet(state.selectedPet).adoptionDate=$("adoptionDate").value;save();renderProfile();renderHome();alert("保存しました");}
+$("saveProfile").onclick=()=>{pet(state.selectedPet).birthday=$("birthday").value;pet(state.selectedPet).adoptionDate=$("adoptionDate").value;save();renderProfile();renderHome();alert("保存しました");}
 
 function renderMedical(){renderTabs("medicalTabs",renderMedical);$("hospitalDate").value=today();$("medicineStart").value=today();renderHospitalList();renderMedicineList();}
 $("hospitalForm").onsubmit=e=>{e.preventDefault();data.hospitals.push({petId:state.selectedPet,date:$("hospitalDate").value,name:$("hospitalName").value,reason:$("hospitalReason").value,cost:Number($("hospitalCost").value)||0,memo:$("hospitalMemo").value});save();renderHospitalList();alert("保存しました");}
@@ -111,7 +140,7 @@ function renderMore(){
    $("annivBox").innerHTML=`<b>🐾 ペット未登録</b><p>＋ボタンからペットを追加してください。</p>`;
    return;
  }
- $("annivBox").innerHTML=`<b>🎂 お迎え記念日</b><p>${p.name}をお迎えして ${daysSince(p.adoptionDate)}日目です</p>`;
+ $("annivBox").innerHTML=`<b>🎂 誕生日</b><p>${p.name}は ${ageText(p.birthday)}<br>${nextBirthdayText(p.birthday)}</p><p>お迎えから ${daysSince(p.adoptionDate)}日</p>`;
 }
 $("exportBtn").onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="mofunote_data.json";a.click();}
 $("resetBtn").onclick=()=>{if(confirm("すべてのデータを削除して空の状態に戻しますか？")){localStorage.removeItem(STORE);location.href=location.pathname+"?v=reset13"+Date.now();}}
