@@ -1,15 +1,13 @@
 {
-  "name": "小動物健康手帳",
-  "short_name": "モフ手帳",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#fff8ef",
-  "theme_color": "#f06f91",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    }
-  ]
+  "name":"モフノート",
+  "short_name":"モフノート",
+  "start_url":"./index.html",
+  "display":"standalone",
+  "background_color":"#f8fcf8",
+  "theme_color":"#78a98b",
+  "icons":[{
+    "src":"icon.png",
+    "sizes":"1024x1024",
+    "type":"image/png"
+  }]
 }
