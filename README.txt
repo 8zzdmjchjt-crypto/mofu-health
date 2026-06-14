@@ -1,17 +1,12 @@
-MofuNote v1.6 Save Feedback
+MofuNote v1.7 Simple Graph
 
 変更内容:
-- 保存・追加・削除操作で反応表示を追加
-- 記録保存: 保存しました✅
-- プロフィール保存: プロフィールを保存しました✅
-- 通院記録保存: 通院記録を保存しました✅
-- 投薬記録保存: 投薬記録を保存しました✅
-- ペット追加: 〇〇を追加しました🐾
-- ペット削除: 〇〇を削除しました🗑️
-- v1.5のグラフ改善は維持
+- ホームの「今日の記録」カード右側アイコンを削除
+- グラフを初期版に近いシンプル表示へ戻す
+- グラフをRetina対応してぼやけを軽減
+- 縦軸数値と最新値ラベルは残す
+- グラフタイトル・凡例は削除して見やすく調整
+- v1.6の保存通知は維持
 
-GitHub更新方法:
-1. ZIPを解凍
-2. 中の全ファイルを mofu-health へ上書きアップロード
-3. Commit changes
-4. Safariで https://8zzdmjchjt-crypto.github.io/mofu-health/?v=16 を開く
+確認URL:
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=17
