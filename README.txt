@@ -1,10 +1,12 @@
-MofuNote v1.7.2 Profile Save Fix
+MofuNote v1.7.3 Photo Save Fix
 
 修正内容:
-- プロフィール保存後に誕生日・お迎え日がリセットされる問題を修正
-- 保存後にlocalStorageへ明示保存
-- 保存後すぐにプロフィール・ホーム・その他画面を更新
-- 保存通知は維持
+- 写真がリセットされる問題を修正
+- プロフィール保存時に写真を保持
+- 写真登録時に画像を圧縮して保存
+- 写真保存時に「写真を保存しました」表示
+- 保存容量不足時のメッセージ追加
+- v1.7.2のプロフィール保存修正は維持
 
 確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=172
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=173

@@ -453,3 +453,141 @@ if(typeof show === "function" && !window.__profileSaveFixWrappedV172){
     setTimeout(applyProfileSaveFixV172, 100);
   };
 }
+
+
+
+// v1.7.3 photo save fix
+function saveDataSafelyV173(){
+  try{
+    localStorage.setItem(STORE, JSON.stringify(data));
+    return true;
+  }catch(e){
+    console.error(e);
+    showToast("保存容量が不足しています。写真を小さくしてください");
+    return false;
+  }
+}
+
+function compressImageFileV173(file, callback){
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxSize = 420;
+      let w = img.width;
+      let h = img.height;
+
+      if(w > h && w > maxSize){
+        h = Math.round(h * maxSize / w);
+        w = maxSize;
+      }else if(h >= w && h > maxSize){
+        w = Math.round(w * maxSize / h);
+        h = maxSize;
+      }
+
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL("image/jpeg", 0.72));
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyPhotoSaveFixV173(){
+  const photoInput = document.getElementById("photoInput");
+  if(photoInput && !photoInput.dataset.photoFixV173){
+    photoInput.dataset.photoFixV173 = "1";
+    photoInput.onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+
+      compressImageFileV173(file, (dataUrl) => {
+        const p = pet(state.selectedPet);
+        if(!p){
+          showToast("ペットが選択されていません");
+          return;
+        }
+
+        p.photo = dataUrl;
+
+        const idx = data.pets.findIndex(x => x.id === p.id);
+        if(idx >= 0){
+          data.pets[idx] = p;
+        }
+
+        if(saveDataSafelyV173()){
+          renderProfile();
+          renderHome();
+          showToast("写真を保存しました📷");
+        }
+      });
+    };
+  }
+
+  const removePhoto = document.getElementById("removePhoto");
+  if(removePhoto && !removePhoto.dataset.photoFixV173){
+    removePhoto.dataset.photoFixV173 = "1";
+    removePhoto.onclick = (e) => {
+      e.preventDefault();
+      const p = pet(state.selectedPet);
+      if(!p) return;
+      p.photo = "";
+      const idx = data.pets.findIndex(x => x.id === p.id);
+      if(idx >= 0) data.pets[idx] = p;
+      saveDataSafelyV173();
+      renderProfile();
+      renderHome();
+      showToast("写真を削除しました");
+    };
+  }
+
+  const saveProfile = document.getElementById("saveProfile");
+  if(saveProfile){
+    saveProfile.onclick = (e) => {
+      e.preventDefault();
+
+      const p = pet(state.selectedPet);
+      if(!p){
+        showToast("ペットが選択されていません");
+        return;
+      }
+
+      const idx = data.pets.findIndex(x => x.id === p.id);
+      const oldPet = idx >= 0 ? data.pets[idx] : p;
+
+      p.birthday = document.getElementById("birthday")?.value || "";
+      p.adoptionDate = document.getElementById("adoptionDate")?.value || "";
+
+      // 写真とアイコンは必ず保持
+      p.photo = oldPet.photo || p.photo || "";
+      p.icon = oldPet.icon || p.icon || "animal_chinchilla.png";
+
+      if(idx >= 0){
+        data.pets[idx] = p;
+      }
+
+      if(saveDataSafelyV173()){
+        renderProfile();
+        renderHome();
+        renderMore();
+        showToast("プロフィールを保存しました✅");
+      }
+    };
+  }
+}
+
+window.addEventListener("load", applyPhotoSaveFixV173);
+setTimeout(applyPhotoSaveFixV173, 500);
+
+if(typeof show === "function" && !window.__photoSaveFixWrappedV173){
+  window.__photoSaveFixWrappedV173 = true;
+  const originalShowV173 = show;
+  show = function(view){
+    originalShowV173(view);
+    setTimeout(applyPhotoSaveFixV173, 100);
+  };
+}
