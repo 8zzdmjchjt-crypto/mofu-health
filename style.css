@@ -179,3 +179,15 @@ main{
  left:50%;
  transform:translateX(-50%);
 }
+
+
+/* v1.4.3 profile spacing */
+#profileView .card{
+  margin-left:20px !important;
+  margin-right:20px !important;
+  margin-bottom:24px !important;
+}
+#profileView{
+  padding-left:4px !important;
+  padding-right:4px !important;
+}
