@@ -267,3 +267,85 @@ window.addEventListener("load", () => {
     btn.ontouchend = (e) => { e.preventDefault(); forceAddPet(); };
   }
 });
+
+
+
+// icon migration + add visible fix v4
+function normalizeAnimalIconForPet(p){
+  if(!p) return p;
+  const type = p.type || "";
+  const icon = p.icon || "";
+
+  if(icon.endsWith && icon.endsWith(".png")) return p;
+
+  if(type.includes("チン")) p.icon = "animal_chinchilla.png";
+  else if(type.includes("デグ")) p.icon = "animal_degu.png";
+  else if(type.includes("モル")) p.icon = "animal_guineapig.png";
+  else if(type.includes("ハム")) p.icon = "animal_hamster.png";
+  else if(type.includes("うさ")) p.icon = "animal_rabbit.png";
+  else p.icon = "animal_chinchilla.png";
+
+  return p;
+}
+
+function migrateOldPetIcons(){
+  pets = pets.map(normalizeAnimalIconForPet);
+  localStorage.setItem("mofunote_pets_v11", JSON.stringify(pets));
+}
+
+function addPetFixedV4(){
+  const nameEl = document.getElementById("newName");
+  const typeEl = document.getElementById("newType");
+  const sexEl = document.getElementById("newSex");
+
+  const name = nameEl ? nameEl.value.trim() : "";
+  const type = typeEl ? (typeEl.value.trim() || "小動物") : "小動物";
+  const sex = sexEl ? (sexEl.value || "不明") : "不明";
+
+  if(!name){
+    alert("名前を入力してください");
+    if(nameEl) nameEl.focus();
+    return;
+  }
+
+  const newPet = normalizeAnimalIconForPet({
+    id: "pet_" + Date.now(),
+    name: name,
+    type: type,
+    sex: sex,
+    adoptionDate: today(),
+    photo: ""
+  });
+
+  pets.push(newPet);
+  state.selectedPet = newPet.id;
+
+  localStorage.setItem("mofunote_pets_v11", JSON.stringify(pets));
+  localStorage.setItem("mofunote_records_v11", JSON.stringify(records));
+  localStorage.setItem("mofunote_hospitals_v11", JSON.stringify(hospitals));
+  localStorage.setItem("mofunote_medicines_v11", JSON.stringify(medicines));
+
+  const dialog = document.getElementById("petDialog");
+  if(dialog && dialog.open) dialog.close();
+
+  renderHome();
+  alert(name + "を追加しました。ホームの一番下に追加されています。");
+}
+
+window.addEventListener("load", () => {
+  migrateOldPetIcons();
+  renderHome();
+
+  const btn = document.getElementById("savePet");
+  if(btn){
+    btn.disabled = false;
+    btn.removeAttribute("disabled");
+    btn.textContent = "追加する";
+    btn.style.opacity = "1";
+    btn.style.pointerEvents = "auto";
+    btn.style.background = "linear-gradient(135deg,#91c7a5,#5e9976)";
+    btn.style.color = "#fff";
+    btn.onclick = (e) => { e.preventDefault(); addPetFixedV4(); };
+    btn.ontouchend = (e) => { e.preventDefault(); addPetFixedV4(); };
+  }
+});

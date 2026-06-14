@@ -1,10 +1,14 @@
-MofuNote v1.2 Pet Add Reload Fix3
+MofuNote v1.2 Icon Migration + Add Fix4
 
 修正内容:
-- ペット追加後に確実にlocalStorageへ保存
-- 追加後にページ再読み込みしてホームへ反映
-- 追加ボタンを強制的に有効化・緑色表示
-- 追加後に「〇〇を追加しました」と表示
+- 既存の絵文字アイコンを小動物イラストアイコンへ自動変換
+- ペット追加後にホームへ即時反映
+- 追加後にメッセージ表示
+- キャッシュ名を変更
 
 確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=petaddfix3
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=iconfix4
+
+もし古い表示が残る場合:
+その他 → サンプルに戻す
+を押すと、初期データも新しいアイコンに変わります。
