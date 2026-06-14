@@ -281,3 +281,58 @@ main{
   margin-left:auto !important;
   margin-right:auto !important;
 }
+
+
+/* v1.4.6 profile frame only fix
+   プロフィールカード内の文字位置は動かさず、カード外枠だけ広げる */
+
+/* プロフィール画面そのものは従来の位置を維持 */
+#profileView{
+  padding-left:18px !important;
+  padding-right:18px !important;
+}
+
+/* タブ・見出し・アイコン選択は動かさない */
+#profileView .tabs,
+#profileView h1,
+#profileView h2,
+#profileView .icon-grid,
+#profileView .formline,
+#saveProfile{
+  transform:none !important;
+}
+
+/* プロフィールカードだけを外側へ拡張 */
+#profileView > .card:first-of-type{
+  width:calc(100% + 18px) !important;
+  max-width:calc(100% + 18px) !important;
+  margin-left:-9px !important;
+  margin-right:-9px !important;
+  box-sizing:border-box !important;
+}
+
+/* 中の文字行は元の位置から動かさない */
+#profileView > .card:first-of-type .row{
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+
+/* 削除ボタンは内側の余白感を維持 */
+#profileView > .card:first-of-type .danger{
+  width:calc(100% - 24px) !important;
+  margin-left:12px !important;
+  margin-right:12px !important;
+}
+
+/* v1.5 graph fix */
+#graphView canvas{
+  width:100% !important;
+  height:auto !important;
+  background:#fff !important;
+  border:1px solid var(--line) !important;
+  border-radius:24px !important;
+  padding:12px !important;
+  box-sizing:border-box !important;
+}
+#graphView .switch{margin-bottom:18px !important;}
+#graphView .tabs{margin-bottom:14px !important;}

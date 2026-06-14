@@ -128,10 +128,145 @@ $("prevMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()-
 $("nextMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()+1);renderCalendar();}
 
 document.querySelectorAll(".switch button").forEach(b=>b.onclick=()=>{state.graph=b.dataset.graph;document.querySelectorAll(".switch button").forEach(x=>x.classList.toggle("active",x===b));renderGraph();});
-function renderGraph(){renderTabs("graphTabs",renderGraph);let rows=Object.values(data.records).filter(r=>r.petId===state.selectedPet).sort((a,b)=>a.date.localeCompare(b.date)).slice(-30);let key=state.graph==="sand"?"sandMinutes":state.graph==="walk"?"walkMinutes":"weight";draw(rows.map(r=>Number(r[key])||0));}
-function draw(vals){let c=$("graph"),ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle="#d9eadf";for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(35,25+i*40);ctx.lineTo(330,25+i*40);ctx.stroke();}if(!vals.length)return;let min=Math.min(...vals)-1,max=Math.max(...vals)+1;ctx.strokeStyle="#78a98b";ctx.fillStyle="#78a98b";ctx.lineWidth=3;ctx.beginPath();vals.forEach((v,i)=>{let x=40+i*(285/Math.max(1,vals.length-1));let y=185-((v-min)/(max-min||1))*150;if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);});ctx.stroke();}
 
+function renderGraph(){
+  renderTabs("graphTabs", renderGraph);
+  let p = pet(state.selectedPet);
+  if(!p){ return; }
 
+  let rows = Object.values(data.records)
+    .filter(r => r.petId === state.selectedPet)
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .slice(-30);
+
+  let key = "weight";
+  let label = "体重推移";
+  let unit = "g";
+
+  if(state.graph === "sand"){
+    key = "sandMinutes";
+    label = "砂浴び時間";
+    unit = "分";
+  }else if(state.graph === "walk"){
+    key = "walkMinutes";
+    label = "部屋んぽ時間";
+    unit = "分";
+  }
+
+  drawGraphV15(rows.map(r => ({date:r.date,value:Number(r[key])||0})), p.name, label, unit);
+}
+
+function drawGraphV15(rows, petName, label, unit){
+  const c = $("graph");
+  const ctx = c.getContext("2d");
+  const W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+
+  const left = 52, right = 18, top = 52, bottom = 36;
+  const chartW = W - left - right;
+  const chartH = H - top - bottom;
+
+  ctx.fillStyle = "#47715a";
+  ctx.font = "bold 15px sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(petName + "｜" + label + "（" + unit + "）", left, 22);
+
+  ctx.strokeStyle = "#78a98b";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(left, 40);
+  ctx.lineTo(left + 28, 40);
+  ctx.stroke();
+  ctx.fillStyle = "#47715a";
+  ctx.font = "12px sans-serif";
+  ctx.fillText(label, left + 36, 44);
+
+  if(!rows.length){
+    ctx.fillStyle = "#75877b";
+    ctx.font = "14px sans-serif";
+    ctx.fillText("記録がまだありません", left, 120);
+    return;
+  }
+
+  const vals = rows.map(r=>r.value);
+  let min = Math.min(...vals);
+  let max = Math.max(...vals);
+
+  if(min === max){
+    min = Math.max(0, min - 5);
+    max = max + 5;
+  }else{
+    const pad = Math.max(1, (max-min)*0.15);
+    min = Math.max(0, Math.floor(min-pad));
+    max = Math.ceil(max+pad);
+  }
+
+  ctx.font = "11px sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  for(let i=0;i<=4;i++){
+    const y = top + chartH*i/4;
+    const val = Math.round(max - (max-min)*i/4);
+    ctx.strokeStyle = "#d9eadf";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(left,y);
+    ctx.lineTo(W-right,y);
+    ctx.stroke();
+    ctx.fillStyle = "#75877b";
+    ctx.fillText(val + unit, left - 6, y);
+  }
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillStyle = "#75877b";
+  const first = rows[0].date ? rows[0].date.slice(5).replace("-","/") : "";
+  const last = rows[rows.length-1].date ? rows[rows.length-1].date.slice(5).replace("-","/") : "";
+  ctx.fillText(first, left, H-bottom+12);
+  ctx.fillText(last, W-right, H-bottom+12);
+
+  ctx.strokeStyle = "#78a98b";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  rows.forEach((r,i)=>{
+    const x = left + chartW * (rows.length===1 ? 0.5 : i/(rows.length-1));
+    const y = top + chartH * (1 - (r.value-min)/(max-min));
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  rows.forEach((r,i)=>{
+    const x = left + chartW * (rows.length===1 ? 0.5 : i/(rows.length-1));
+    const y = top + chartH * (1 - (r.value-min)/(max-min));
+    ctx.fillStyle = "#78a98b";
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  const latest = rows[rows.length-1];
+  const lx = W - right - 26;
+  const ly = top + chartH * (1 - (latest.value-min)/(max-min));
+  const labelText = latest.value + unit;
+  ctx.fillStyle = "#78a98b";
+  roundRect(ctx, lx-24, Math.max(top, Math.min(top+chartH-24, ly-13)), 48, 26, 13);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(labelText, lx, Math.max(top+13, Math.min(top+chartH-11, ly)));
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
 
 
 function renderMore(){
