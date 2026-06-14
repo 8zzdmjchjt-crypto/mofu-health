@@ -390,3 +390,66 @@ if(typeof deleteSelectedPet === "function"){
   };
   window.deleteSelectedPet = deleteSelectedPet;
 }
+
+
+
+// v1.7.2 profile save fix
+function saveProfileFixedV172(){
+  const p = pet(state.selectedPet);
+  if(!p){
+    showToast("ペットが選択されていません");
+    return;
+  }
+
+  const birthdayEl = document.getElementById("birthday");
+  const adoptionEl = document.getElementById("adoptionDate");
+
+  if(birthdayEl){
+    p.birthday = birthdayEl.value || "";
+  }
+  if(adoptionEl){
+    p.adoptionDate = adoptionEl.value || "";
+  }
+
+  // 念のため、pets配列へ明示的に反映
+  const idx = data.pets.findIndex(x => x.id === p.id);
+  if(idx >= 0){
+    data.pets[idx] = p;
+  }
+
+  save();
+  localStorage.setItem(STORE, JSON.stringify(data));
+
+  renderProfile();
+  renderHome();
+  renderMore();
+
+  showToast("プロフィールを保存しました✅");
+}
+
+function applyProfileSaveFixV172(){
+  const btn = document.getElementById("saveProfile");
+  if(btn){
+    btn.onclick = (e) => {
+      e.preventDefault();
+      saveProfileFixedV172();
+    };
+    btn.ontouchend = (e) => {
+      e.preventDefault();
+      saveProfileFixedV172();
+    };
+  }
+}
+
+window.addEventListener("load", applyProfileSaveFixV172);
+setTimeout(applyProfileSaveFixV172, 500);
+
+// 画面切替後にプロフィール保存ボタンが再生成される場合にも適用
+if(typeof show === "function" && !window.__profileSaveFixWrappedV172){
+  window.__profileSaveFixWrappedV172 = true;
+  const originalShowV172 = show;
+  show = function(view){
+    originalShowV172(view);
+    setTimeout(applyProfileSaveFixV172, 100);
+  };
+}
