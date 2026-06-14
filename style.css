@@ -152,3 +152,30 @@ header > div:first-child{
   display:block;
   margin-top:2px;
 }
+
+
+/* v1.4.2 UI final */
+#app{
+  max-width:390px !important;
+}
+main{
+  padding-left:14px !important;
+  padding-right:14px !important;
+}
+#profileView .card,
+#profileView .pet-card,
+#profileView .hero{
+  width:100% !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.icon-grid,#iconGrid{
+  padding:4px !important;
+  gap:10px !important;
+}
+.save-toast{
+ position:fixed;
+ bottom:90px;
+ left:50%;
+ transform:translateX(-50%);
+}

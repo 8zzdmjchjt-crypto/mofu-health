@@ -108,17 +108,17 @@ function renderRecord(){
 }
 function loadRecord(){let r=data.records[state.selectedPet+"_"+$("recordDate").value]||{};["weight","sandMinutes","walkMinutes","temp","humidity","memo"].forEach(id=>$(id).value=r[id]||"");["appetite","energy","poop"].forEach(id=>{if(r[id])$(id).value=r[id]});$("sandBath").checked=!!r.sandBath;$("walk").checked=!!r.walk;}
 $("recordDate").onchange=loadRecord;
-$("recordForm").onsubmit=e=>{e.preventDefault();let ds=$("recordDate").value||today();data.records[state.selectedPet+"_"+ds]={petId:state.selectedPet,date:ds,weight:Number($("weight").value)||0,appetite:$("appetite").value,energy:$("energy").value,poop:$("poop").value,sandBath:$("sandBath").checked,sandMinutes:Number($("sandMinutes").value)||0,walk:$("walk").checked,walkMinutes:Number($("walkMinutes").value)||0,temp:Number($("temp").value)||0,humidity:Number($("humidity").value)||0,memo:$("memo").value};save();alert("保存しました");show("homeView");}
+$("recordForm").onsubmit=e=>{e.preventDefault();let ds=$("recordDate").value||today();data.records[state.selectedPet+"_"+ds]={petId:state.selectedPet,date:ds,weight:Number($("weight").value)||0,appetite:$("appetite").value,energy:$("energy").value,poop:$("poop").value,sandBath:$("sandBath").checked,sandMinutes:Number($("sandMinutes").value)||0,walk:$("walk").checked,walkMinutes:Number($("walkMinutes").value)||0,temp:Number($("temp").value)||0,humidity:Number($("humidity").value)||0,memo:$("memo").value};save();showToast("保存しました");show("homeView");}
 
 function renderTabs(id, cb){$(id).innerHTML=data.pets.map(p=>`<button class="${p.id===state.selectedPet?'active':''}" data-id="${p.id}">${p.name}</button>`).join("");$(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{state.selectedPet=b.dataset.id;cb();});}
 function renderProfile(){renderTabs("profileTabs",renderProfile);let p=pet(state.selectedPet);$("profileCard").innerHTML=`<div class="profile-img">${p.photo?`<img src="${p.photo}">`:`<img src="${p.icon}">`}</div><div class="row"><span>名前</span><b>${p.name}</b></div><div class="row"><span>種類</span><b>${p.type}</b></div><div class="row"><span>性別</span><b>${p.sex}</b></div><div class="row"><span>誕生日</span><b>${p.birthday||"未設定"}</b></div><div class="row"><span>年齢</span><b>${ageText(p.birthday)}</b></div><div class="row"><span>お迎え</span><b>${p.adoptionDate||"未設定"}</b></div><button class="danger" onclick="deleteSelectedPet()">このペットを削除</button>`;$("birthday").value=p.birthday||"";$("adoptionDate").value=p.adoptionDate||"";$("iconGrid").innerHTML=iconChoices.map(i=>`<button class="${p.icon===i.file?'selectedIcon':''}" data-file="${i.file}"><img src="${i.file}">${i.label}</button>`).join("");$("iconGrid").querySelectorAll("button").forEach(b=>b.onclick=()=>{p.icon=b.dataset.file;p.photo="";save();renderProfile();renderHome();});}
 $("photoInput").onchange=e=>{let f=e.target.files[0];if(!f)return;let reader=new FileReader();reader.onload=()=>{pet(state.selectedPet).photo=reader.result;save();renderProfile();renderHome();};reader.readAsDataURL(f);}
 $("removePhoto").onclick=()=>{pet(state.selectedPet).photo="";save();renderProfile();renderHome();}
-$("saveProfile").onclick=()=>{pet(state.selectedPet).birthday=$("birthday").value;pet(state.selectedPet).adoptionDate=$("adoptionDate").value;save();renderProfile();renderHome();alert("保存しました");}
+$("saveProfile").onclick=()=>{pet(state.selectedPet).birthday=$("birthday").value;pet(state.selectedPet).adoptionDate=$("adoptionDate").value;save();renderProfile();renderHome();showToast("保存しました");}
 
 function renderMedical(){renderTabs("medicalTabs",renderMedical);$("hospitalDate").value=today();$("medicineStart").value=today();renderHospitalList();renderMedicineList();}
-$("hospitalForm").onsubmit=e=>{e.preventDefault();data.hospitals.push({petId:state.selectedPet,date:$("hospitalDate").value,name:$("hospitalName").value,reason:$("hospitalReason").value,cost:Number($("hospitalCost").value)||0,memo:$("hospitalMemo").value});save();renderHospitalList();alert("保存しました");}
-$("medicineForm").onsubmit=e=>{e.preventDefault();data.medicines.push({petId:state.selectedPet,name:$("medicineName").value,dose:$("medicineDose").value,start:$("medicineStart").value,end:$("medicineEnd").value,memo:$("medicineMemo").value});save();renderMedicineList();alert("保存しました");}
+$("hospitalForm").onsubmit=e=>{e.preventDefault();data.hospitals.push({petId:state.selectedPet,date:$("hospitalDate").value,name:$("hospitalName").value,reason:$("hospitalReason").value,cost:Number($("hospitalCost").value)||0,memo:$("hospitalMemo").value});save();renderHospitalList();showToast("保存しました");}
+$("medicineForm").onsubmit=e=>{e.preventDefault();data.medicines.push({petId:state.selectedPet,name:$("medicineName").value,dose:$("medicineDose").value,start:$("medicineStart").value,end:$("medicineEnd").value,memo:$("medicineMemo").value});save();renderMedicineList();showToast("保存しました");}
 function renderHospitalList(){$("hospitalList").innerHTML=data.hospitals.filter(h=>h.petId===state.selectedPet).map(h=>`<div class="card list"><b>🏥 ${h.date} ${h.name}</b><br>${h.reason}<br><small>${h.cost}円 ${h.memo||""}</small></div>`).join("");}
 function renderMedicineList(){$("medicineList").innerHTML=data.medicines.filter(m=>m.petId===state.selectedPet).map(m=>`<div class="card list"><b>💊 ${m.name}</b><br>${m.dose}<br><small>${m.start}〜${m.end||"継続中"}</small></div>`).join("");}
 
@@ -176,3 +176,11 @@ function deleteSelectedPet(){
 
 // expose for inline onclick
 window.deleteSelectedPet = deleteSelectedPet;
+
+function showToast(msg){
+ let t=document.getElementById('toast');
+ if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}
+ t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#5f9f7b;color:#fff;padding:10px 18px;border-radius:20px;z-index:9999';
+ t.textContent=msg;
+ setTimeout(()=>t.remove(),1500);
+}
