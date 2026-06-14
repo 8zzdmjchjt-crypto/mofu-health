@@ -13,3 +13,58 @@ dialog{border:0;border-radius:28px;width:min(360px,90vw);padding:24px;box-shadow
 .icon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.icon-grid button{border:1px solid var(--line);border-radius:18px;background:#fff;padding:10px;font-weight:800}.icon-grid img{width:54px;height:54px;border-radius:18px;object-fit:cover;display:block;margin:0 auto 5px}.selectedIcon{outline:3px solid var(--green)}
 .monthbar{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px}.monthbar button{border:0;background:var(--mint);color:var(--deep);border-radius:14px;width:40px;height:36px;font-size:24px}.week,.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:10px}.week span{text-align:center;color:#75877b;font-weight:800}.day{height:46px;border:1px solid var(--line);border-radius:15px;background:#fff;text-align:center;padding-top:6px;font-weight:800}.today{background:var(--green)!important;color:#fff}.other{opacity:.25}.day-icons{font-size:11px}.list{padding:12px}.menu{width:100%;padding:16px;text-align:left;font-weight:900;margin:9px 0}.notice{padding:14px;color:#75877b;font-size:12px}.anniv{padding:16px}
 canvas{width:100%;background:#fff;border:1px solid var(--line);border-radius:24px;padding:12px}.profile-img{width:110px;height:110px;border-radius:36px;background:var(--mint);overflow:hidden;display:grid;place-items:center;margin:0 auto 12px}.profile-img img{width:100%;height:100%;object-fit:cover}.row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:9px 0}
+
+
+/* image size fix */
+#app{
+  width:100%;
+  max-width:430px;
+  overflow-x:hidden;
+}
+
+.hero{
+  min-height:120px;
+  overflow:hidden;
+}
+
+.hero img{
+  width:72px !important;
+  height:72px !important;
+  max-width:72px !important;
+  max-height:72px !important;
+  object-fit:cover !important;
+  border-radius:22px !important;
+  flex-shrink:0 !important;
+}
+
+.avatar{
+  width:64px !important;
+  height:64px !important;
+  min-width:64px !important;
+  max-width:64px !important;
+  min-height:64px !important;
+  max-height:64px !important;
+  overflow:hidden !important;
+}
+
+.avatar img{
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+}
+
+.profile-img img,
+.icon-grid img{
+  object-fit:cover !important;
+  display:block !important;
+}
+
+.pet-card,
+.hero,
+.card{
+  max-width:100%;
+  overflow:hidden;
+}
