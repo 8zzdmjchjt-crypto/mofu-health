@@ -126,3 +126,144 @@ $("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({pets,records,ho
 $("resetBtn").onclick=()=>{localStorage.removeItem("mofunote_pets_v11");localStorage.removeItem("mofunote_records_v11");localStorage.removeItem("mofunote_hospitals_v11");localStorage.removeItem("mofunote_medicines_v11");location.reload();}
 if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").catch(()=>{});}
 renderHome();renderCalendar();renderGraph();renderRecordForm();
+
+
+
+// add button fix v2
+function addPetFromDialog(){
+  const nameEl = document.getElementById("newName");
+  const typeEl = document.getElementById("newType");
+  const sexEl = document.getElementById("newSex");
+  if(!nameEl || !typeEl || !sexEl){ alert("入力欄が見つかりません"); return; }
+
+  const name = nameEl.value.trim();
+  if(!name){
+    alert("名前を入力してください");
+    nameEl.focus();
+    return;
+  }
+
+  const type = typeEl.value.trim() || "小動物";
+  const sex = sexEl.value || "不明";
+
+  let icon = "animal_chinchilla.png";
+  if(type.includes("デグ")) icon = "animal_degu.png";
+  else if(type.includes("モル")) icon = "animal_guineapig.png";
+  else if(type.includes("ハム")) icon = "animal_hamster.png";
+  else if(type.includes("うさ")) icon = "animal_rabbit.png";
+  else if(type.includes("チン")) icon = "animal_chinchilla.png";
+
+  pets.push({
+    id: String(Date.now()),
+    name: name,
+    type: type,
+    sex: sex,
+    icon: icon,
+    adoptionDate: today(),
+    photo: ""
+  });
+
+  save();
+  const dialog = document.getElementById("petDialog");
+  if(dialog && dialog.open) dialog.close();
+  renderHome();
+  alert("ペットを追加しました");
+}
+
+setTimeout(() => {
+  const addBtn = document.getElementById("savePet");
+  const closeBtn = document.getElementById("closePet");
+  const plusBtn = document.getElementById("addPetBtn");
+
+  if(plusBtn){
+    plusBtn.onclick = () => {
+      document.getElementById("newName").value = "";
+      document.getElementById("newType").value = "チンチラ";
+      document.getElementById("newSex").value = "♀";
+      document.getElementById("petDialog").showModal();
+    };
+  }
+
+  if(closeBtn){
+    closeBtn.onclick = () => {
+      document.activeElement && document.activeElement.blur();
+      document.getElementById("petDialog").close();
+    };
+  }
+
+  if(addBtn){
+    addBtn.disabled = false;
+    addBtn.removeAttribute("disabled");
+    addBtn.style.opacity = "1";
+    addBtn.style.pointerEvents = "auto";
+    addBtn.onclick = (e) => { e.preventDefault(); addPetFromDialog(); };
+    addBtn.ontouchend = (e) => { e.preventDefault(); addPetFromDialog(); };
+  }
+}, 300);
+
+
+
+// pet add reload fix v3
+function chooseAnimalIconByType(type){
+  if(type.includes("デグ")) return "animal_degu.png";
+  if(type.includes("モル")) return "animal_guineapig.png";
+  if(type.includes("ハム")) return "animal_hamster.png";
+  if(type.includes("うさ")) return "animal_rabbit.png";
+  if(type.includes("チン")) return "animal_chinchilla.png";
+  return "animal_chinchilla.png";
+}
+
+function forceAddPet(){
+  const nameEl = document.getElementById("newName");
+  const typeEl = document.getElementById("newType");
+  const sexEl = document.getElementById("newSex");
+
+  const name = nameEl ? nameEl.value.trim() : "";
+  const type = typeEl ? (typeEl.value.trim() || "小動物") : "小動物";
+  const sex = sexEl ? (sexEl.value || "不明") : "不明";
+
+  if(!name){
+    alert("名前を入力してください");
+    if(nameEl) nameEl.focus();
+    return false;
+  }
+
+  const newPet = {
+    id: "pet_" + Date.now(),
+    name: name,
+    type: type,
+    sex: sex,
+    icon: chooseAnimalIconByType(type),
+    adoptionDate: today(),
+    photo: ""
+  };
+
+  pets.push(newPet);
+  localStorage.setItem("mofunote_pets_v11", JSON.stringify(pets));
+  localStorage.setItem("mofunote_records_v11", JSON.stringify(records));
+  localStorage.setItem("mofunote_hospitals_v11", JSON.stringify(hospitals));
+  localStorage.setItem("mofunote_medicines_v11", JSON.stringify(medicines));
+  alert(name + "を追加しました");
+
+  const dialog = document.getElementById("petDialog");
+  if(dialog && dialog.open) dialog.close();
+
+  location.href = location.pathname + "?v=petaddfix3&t=" + Date.now();
+  return true;
+}
+
+window.addEventListener("load", () => {
+  const btn = document.getElementById("savePet");
+  if(btn){
+    btn.disabled = false;
+    btn.removeAttribute("disabled");
+    btn.classList.add("addPetSubmit");
+    btn.textContent = "追加する";
+    btn.style.opacity = "1";
+    btn.style.pointerEvents = "auto";
+    btn.style.background = "linear-gradient(135deg,#91c7a5,#5e9976)";
+    btn.style.color = "#fff";
+    btn.onclick = (e) => { e.preventDefault(); forceAddPet(); };
+    btn.ontouchend = (e) => { e.preventDefault(); forceAddPet(); };
+  }
+});

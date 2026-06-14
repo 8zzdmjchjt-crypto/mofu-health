@@ -1,14 +1,10 @@
-MofuNote v1.2 Animal Icons Add Fix
+MofuNote v1.2 Pet Add Reload Fix3
 
 修正内容:
-- ペット追加ボタンが押せない問題の修正
-- 性別表示を「女の子 / 男の子 / 不明」に変更
-- 追加時に名前未入力ならメッセージ表示
-- 追加後に「ペットを追加しました」と表示
-- キャッシュ名を変更して更新が反映されやすいように修正
+- ペット追加後に確実にlocalStorageへ保存
+- 追加後にページ再読み込みしてホームへ反映
+- 追加ボタンを強制的に有効化・緑色表示
+- 追加後に「〇〇を追加しました」と表示
 
-更新方法:
-1. ZIPを解凍
-2. 中のファイルをすべて mofu-health へ上書きアップロード
-3. Commit changes
-4. https://8zzdmjchjt-crypto.github.io/mofu-health/?v=12fix を開く
+確認URL:
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=petaddfix3

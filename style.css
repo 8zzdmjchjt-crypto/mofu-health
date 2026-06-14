@@ -27,3 +27,22 @@ dialog{border:0;border-radius:26px;padding:20px;width:min(360px,90vw);box-shadow
   display:block;
   margin:0 auto 4px;
 }
+
+.addPetSubmit{
+  opacity:1 !important;
+  pointer-events:auto !important;
+  min-width:110px;
+  font-weight:900;
+}
+.dialogBtns{
+  align-items:center;
+}
+
+#savePet.addPetSubmit{
+  opacity:1 !important;
+  pointer-events:auto !important;
+  background:linear-gradient(135deg,#91c7a5,#5e9976) !important;
+  color:#fff !important;
+  min-width:120px !important;
+  font-weight:900 !important;
+}
