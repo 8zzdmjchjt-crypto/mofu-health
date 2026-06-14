@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f06f91">
+  <meta name="theme-color" content="#78a98b">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <title>小動物健康手帳</title>
+  <title>モフノート v1.1</title>
 </head>
 <body>
 <div id="app">
   <header class="app-header">
     <div>
-      <div class="brand">🐾 小動物健康手帳</div>
-      <div class="sub">体重・ごはん・砂浴び・部屋んぽを記録</div>
+      <div class="brand">🐾 モフノート</div>
+      <div class="sub">小動物の健康記録アプリ v1.1</div>
     </div>
     <button class="round" id="addPetBtn">＋</button>
   </header>
 
   <main>
     <section class="view active" id="homeView">
-      <h2>ペット一覧</h2>
+      <h2>ホーム</h2>
       <div class="hero">
         <div>
           <b>今日の記録</b>
-          <p>体重・食欲・うんち・活動をかんたんチェック</p>
+          <p>体重・ごはん・砂浴び・部屋んぽ・通院・投薬をまとめて管理</p>
         </div>
         <div class="heroAnimal">🐭</div>
       </div>
@@ -40,7 +40,7 @@
       </div>
       <div class="week"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
       <div class="calendar" id="calendar"></div>
-      <div class="legend"><span>● 記録</span><span>● 写真</span><span>● 活動</span></div>
+      <div class="legend"><span>● 記録</span><span>🏥 通院</span><span>💊 投薬</span><span>🎂 記念日</span></div>
       <h3 id="dayTitle">今日の記録</h3>
       <div id="dayRecords"></div>
     </section>
@@ -71,28 +71,75 @@
       </form>
     </section>
 
+    <section class="view" id="profileView">
+      <h2>プロフィール</h2>
+      <div class="petTabs" id="profilePetTabs"></div>
+      <div class="profileCard" id="profileCard"></div>
+
+      <h3>アイコン選択</h3>
+      <div class="iconGrid" id="iconGrid"></div>
+
+      <h3>写真登録</h3>
+      <div class="photoBox">
+        <input type="file" accept="image/*" id="photoInput">
+        <button class="secondary" id="removePhotoBtn">写真を削除</button>
+      </div>
+
+      <h3>お迎え記念日</h3>
+      <label class="formLine">お迎え日<input type="date" id="adoptionDate"></label>
+      <button class="primary" id="saveProfileBtn">プロフィール保存</button>
+    </section>
+
+    <section class="view" id="medicalView">
+      <h2>通院・投薬</h2>
+      <div class="petTabs" id="medicalPetTabs"></div>
+
+      <h3>通院記録</h3>
+      <form id="hospitalForm">
+        <label>通院日<input type="date" id="hospitalDate"></label>
+        <label>病院名<input type="text" id="hospitalName" placeholder="○○動物病院"></label>
+        <label>内容<input type="text" id="hospitalReason" placeholder="定期健診・食欲不振など"></label>
+        <label>費用<input type="number" id="hospitalCost" placeholder="3850"></label>
+        <label class="memo">メモ<textarea id="hospitalMemo"></textarea></label>
+        <button class="primary" type="submit">通院記録を保存</button>
+      </form>
+      <div id="hospitalList"></div>
+
+      <h3>投薬記録</h3>
+      <form id="medicineForm">
+        <label>薬名<input type="text" id="medicineName" placeholder="整腸剤"></label>
+        <label>回数<input type="text" id="medicineDose" placeholder="1日2回"></label>
+        <label>開始日<input type="date" id="medicineStart"></label>
+        <label>終了日<input type="date" id="medicineEnd"></label>
+        <label class="memo">メモ<textarea id="medicineMemo"></textarea></label>
+        <button class="primary" type="submit">投薬記録を保存</button>
+      </form>
+      <div id="medicineList"></div>
+    </section>
+
     <section class="view" id="graphView">
-      <h2>体重グラフ</h2>
+      <h2>グラフ</h2>
       <div class="petTabs" id="graphPetTabs"></div>
+      <div class="graphSwitch">
+        <button data-graph="weight" class="active">体重</button>
+        <button data-graph="sand">砂浴び</button>
+        <button data-graph="walk">部屋んぽ</button>
+      </div>
       <canvas id="graph" width="350" height="240"></canvas>
       <div class="stats">
-        <div><small>最高</small><b id="maxWeight">-</b></div>
-        <div><small>最低</small><b id="minWeight">-</b></div>
-        <div><small>変化</small><b id="diffWeight">-</b></div>
+        <div><small>最高</small><b id="maxValue">-</b></div>
+        <div><small>最低</small><b id="minValue">-</b></div>
+        <div><small>変化</small><b id="diffValue">-</b></div>
       </div>
     </section>
 
     <section class="view" id="moreView">
       <h2>その他</h2>
-      <div class="anniv">
-        <div>
-          <b>お迎え記念日</b>
-          <p>大切な家族の記念日も忘れずに。</p>
-        </div>
-        <span>🎀🐭</span>
-      </div>
-      <button class="menu" id="exportBtn">データを書き出す</button>
-      <button class="menu" id="resetBtn">サンプルに戻す</button>
+      <div class="anniv" id="annivBox"></div>
+      <button class="menu" onclick="show('profileView')">🐭 プロフィール・写真・アイコン選択</button>
+      <button class="menu" onclick="show('medicalView')">🏥 通院・投薬記録</button>
+      <button class="menu" id="exportBtn">⬇ データを書き出す</button>
+      <button class="menu" id="resetBtn">↩ サンプルに戻す</button>
       <p class="notice">このアプリは記録用です。診断や治療の代わりにはなりません。</p>
     </section>
   </main>
