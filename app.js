@@ -2,12 +2,17 @@ const $=id=>document.getElementById(id);
 const today=()=>new Date().toISOString().slice(0,10);
 let state={viewMonth:new Date(),selectedPet:"moka",selectedDate:today(),graph:"weight"};
 const iconChoices=[
-  {icon:"🐭",label:"チンチラ"},{icon:"🐹",label:"デグー"},{icon:"🐰",label:"うさぎ"},
-  {icon:"🐁",label:"ハムスター"},{icon:"🐿️",label:"小動物"},{icon:"🦦",label:"フェレット"}
+  {icon:"animal_chinchilla.png",label:"チンチラ",kind:"image"},
+  {icon:"animal_degu.png",label:"デグー",kind:"image"},
+  {icon:"animal_guineapig.png",label:"モルモット",kind:"image"},
+  {icon:"animal_hamster.png",label:"ハムスター",kind:"image"},
+  {icon:"animal_rabbit.png",label:"うさぎ",kind:"image"},
+  {icon:"animal_chinchilla.png",label:"チンチラ絵文字",kind:"emoji"},
+  {icon:"animal_degu.png",label:"小動物絵文字",kind:"emoji"}
 ];
 const samplePets=[
 {id:"moka",name:"モカ",type:"チンチラ",sex:"♀",icon:"🐭",adoptionDate:"2024-03-15",photo:""},
-{id:"cocoa",name:"ココア",type:"デグー",sex:"♂",icon:"🐹",adoptionDate:"2023-08-01",photo:""},
+{id:"cocoa",name:"ココア",type:"デグー",sex:"♂",icon:"animal_guineapig.png",adoptionDate:"2023-08-01",photo:""},
 {id:"maron",name:"まろん",type:"モルモット",sex:"♀",icon:"🐹",adoptionDate:"2022-10-20",photo:""}
 ];
 function makeSamples(){
@@ -26,14 +31,9 @@ function save(){localStorage.setItem("mofunote_pets_v11",JSON.stringify(pets));l
 function key(p,d){return p+"_"+d}
 function latest(petId){return Object.values(records).filter(r=>r.petId===petId&&r.weight).sort((a,b)=>a.date.localeCompare(b.date)).pop()}
 function pet(id){return pets.find(p=>p.id===id)||pets[0]}
-function petAvatar(p, cls="avatar"){return `<div class="${cls}">${p.photo?`<img src="${p.photo}">`:p.icon}</div>`}
-function daysSince(ds){if(!ds)return "-"; const d=new Date(ds+"T00:00:00"); return Math.floor((new Date()-d)/(1000*60*60*24));}
-
-function show(view){
- document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));$(view).classList.add("active");
- document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
- if(view==="calendarView")renderCalendar(); if(view==="graphView")renderGraph(); if(view==="recordView")renderRecordForm();
- if(view==="profileView")renderProfile(); if(view==="medicalView")renderMedical(); if(view==="moreView")renderMore();
+function petAvatar(p, cls="avatar"){
+  const isImage = p.icon && (p.icon.endsWith(".png") || p.icon.endsWith(".jpg") || p.icon.endsWith(".jpeg") || p.icon.endsWith(".webp"));
+  return `<div class="${cls}">${p.photo?`<img src="${p.photo}">`:(isImage?`<img src="${p.icon}">`:p.icon)}</div>`
 }
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
 
@@ -54,9 +54,9 @@ function renderDay(ds){$("dayTitle").textContent=ds.replaceAll("-","/")+" の記
 $("prevMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()-1);renderCalendar();}
 $("nextMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()+1);renderCalendar();}
 
-function renderProfile(){renderPetTabs("profilePetTabs",()=>renderProfile());const p=pet(state.selectedPet);$("profileCard").innerHTML=`<div class="profilePhoto">${p.photo?`<img src="${p.photo}">`:p.icon}</div><div class="profileRows"><div><span>名前</span><b>${p.name}</b></div><div><span>種類</span><b>${p.type}</b></div><div><span>性別</span><b>${p.sex}</b></div><div><span>お迎え</span><b>${p.adoptionDate||"未設定"}</b></div><div><span>お迎えから</span><b>${daysSince(p.adoptionDate)}日</b></div></div>`;
+function renderProfile(){renderPetTabs("profilePetTabs",()=>renderProfile());const p=pet(state.selectedPet);$("profileCard").innerHTML=`<div class="profilePhoto">${p.photo?`<img src="${p.photo}">`:(p.icon&&p.icon.endsWith(".png")?`<img src="${p.icon}">`:p.icon)}</div><div class="profileRows"><div><span>名前</span><b>${p.name}</b></div><div><span>種類</span><b>${p.type}</b></div><div><span>性別</span><b>${p.sex}</b></div><div><span>お迎え</span><b>${p.adoptionDate||"未設定"}</b></div><div><span>お迎えから</span><b>${daysSince(p.adoptionDate)}日</b></div></div>`;
  $("adoptionDate").value=p.adoptionDate||"";
- $("iconGrid").innerHTML=iconChoices.map(i=>`<button class="iconChoice ${p.icon===i.icon?'active':''}" data-icon="${i.icon}"><span>${i.icon}</span>${i.label}</button>`).join("");
+ $("iconGrid").innerHTML=iconChoices.map(i=>`<button class="iconChoice ${p.icon===i.icon?'active':''}" data-icon="${i.icon}"><span>${i.kind==="image"?`<img src="${i.icon}">`:i.icon}</span>${i.label}</button>`).join("");
  $("iconGrid").querySelectorAll("button").forEach(b=>b.onclick=()=>{p.icon=b.dataset.icon;p.photo="";save();renderProfile();renderHome();});
 }
 function renderPetTabs(id, cb){const box=$(id);box.innerHTML=pets.map(p=>`<button class="${p.id===state.selectedPet?'active':''}" data-pet="${p.id}">${p.name}</button>`).join("");box.querySelectorAll("button").forEach(b=>b.onclick=()=>{state.selectedPet=b.dataset.pet;cb&&cb();});}
@@ -75,7 +75,7 @@ function drawGraph(rows, unit){const c=$("graph"),ctx=c.getContext("2d");ctx.cle
 
 function renderMore(){const p=pet(state.selectedPet);$("annivBox").innerHTML=`<div><b>🎂 お迎え記念日</b><p>${p.name}をお迎えして<br><strong>${daysSince(p.adoptionDate)}日目です</strong></p></div><span>${p.photo?`<img src="${p.photo}" style="width:64px;height:64px;border-radius:22px;object-fit:cover">`:p.icon}</span>`;}
 
-$("addPetBtn").onclick=()=>$("petDialog").showModal();$("closePet").onclick=()=>$("petDialog").close();$("savePet").onclick=()=>{const name=$("newName").value.trim();if(!name)return;const type=$("newType").value.trim()||"小動物";pets.push({id:String(Date.now()),name,type,sex:$("newSex").value,icon:type.includes("チン")?"🐭":"🐹",adoptionDate:today(),photo:""});save();$("petDialog").close();renderHome();}
+$("addPetBtn").onclick=()=>$("petDialog").showModal();$("closePet").onclick=()=>$("petDialog").close();$("savePet").onclick=()=>{const name=$("newName").value.trim();if(!name)return;const type=$("newType").value.trim()||"小動物";pets.push({id:String(Date.now()),name,type,sex:$("newSex").value,icon:type.includes("チン")?"animal_chinchilla.png":type.includes("デグ")?"animal_degu.png":type.includes("モル")?"animal_guineapig.png":type.includes("ハム")?"animal_hamster.png":type.includes("うさ")?"animal_rabbit.png":"animal_chinchilla.png",adoptionDate:today(),photo:""});save();$("petDialog").close();renderHome();}
 $("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({pets,records,hospitals,medicines},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="mofunote_data.json";a.click();}
 $("resetBtn").onclick=()=>{localStorage.removeItem("mofunote_pets_v11");localStorage.removeItem("mofunote_records_v11");localStorage.removeItem("mofunote_hospitals_v11");localStorage.removeItem("mofunote_medicines_v11");location.reload();}
 if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").catch(()=>{});}
