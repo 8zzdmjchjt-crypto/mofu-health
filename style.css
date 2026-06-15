@@ -515,3 +515,25 @@ main{
 .day.other.todayMark{
   opacity:.45 !important;
 }
+
+
+/* v1.8.4 profile card breathing space */
+.profile-card,
+.profileBox,
+#profileView .card{
+  padding-left:16px !important;
+  padding-right:16px !important;
+  box-sizing:border-box !important;
+}
+
+/* keep table width slightly inside frame */
+#profileView table,
+#profileView .profile-table{
+  width:100% !important;
+}
+
+#profileView .danger,
+#profileView .deleteBtn{
+  margin-left:8px !important;
+  margin-right:8px !important;
+}
