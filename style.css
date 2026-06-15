@@ -488,12 +488,30 @@ main{
 }
 
 
-/* v1.8.3: selected calendar day highlight */
-.day.selected{
-  background:var(--green)!important;
-  color:#fff;
-  border-color:var(--green);
+/* v1.8.3 calendar selected day fix */
+/* 今日の日付は塗らず、薄い枠だけ */
+.day.today,
+.day.todayMark{
+  background:#fff !important;
+  color:var(--text) !important;
+  border:2px solid #78a98b !important;
 }
-.day.selected .day-icons{
-  color:#fff;
+
+/* 選択中の日付だけ緑 */
+.day.selectedDay{
+  background:#78a98b !important;
+  color:#fff !important;
+  border-color:#78a98b !important;
+}
+
+/* 今日かつ選択中なら選択色を優先 */
+.day.todayMark.selectedDay,
+.day.today.selectedDay{
+  background:#78a98b !important;
+  color:#fff !important;
+  border-color:#78a98b !important;
+}
+
+.day.other.todayMark{
+  opacity:.45 !important;
 }

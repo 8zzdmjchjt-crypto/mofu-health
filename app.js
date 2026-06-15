@@ -696,12 +696,60 @@ function renderCalendar(){
     if(data.hospitals.some(h => h.date === ds)) icons += "🏥";
     if(data.medicines.some(md => md.start <= ds && (!md.end || md.end >= ds))) icons += "💊";
 
-    html += `<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''} ${ds===state.selectedDate?'selected':''}" onclick="state.selectedDate='${ds}';renderCalendar()">${d.getDate()}<div class="day-icons">${icons}</div></div>`;
+    html += `<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''}" onclick="state.selectedDate='${ds}';renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`;
   }
 
   $("calendar").innerHTML = html;
 
   // 表示中の月に選択日がない場合だけ今日へ戻す
+  if(!state.selectedDate) state.selectedDate = today();
+  renderDay(state.selectedDate);
+}
+
+function renderDay(ds){
+  state.selectedDate = ds;
+  $("dayTitle").textContent = ds + " の記録";
+
+  let html = "";
+  Object.values(data.records)
+    .filter(r => r.date === ds)
+    .forEach(r => {
+      let p = pet(r.petId);
+      html += `<div class="pet-card">${avatar(p)}<b>${p.name}</b> ${r.weight||"-"}g${r.photo?`<br><img class="day-photo" src="${r.photo}">`:""}</div>`;
+    });
+
+  $("dayList").innerHTML = html || '<p class="notice">記録はまだありません。</p>';
+}
+
+
+
+// v1.8.3 calendar selected day color fix
+function renderCalendar(){
+  const y = state.viewMonth.getFullYear();
+  const m = state.viewMonth.getMonth();
+  $("monthTitle").textContent = `${y}年${m+1}月`;
+
+  const firstDay = new Date(y, m, 1);
+  const start = new Date(y, m, 1 - firstDay.getDay());
+
+  let html = "";
+  for(let i=0; i<42; i++){
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const ds = localDateString(d);
+    let icons = "";
+
+    if(Object.values(data.records).some(r => r.date === ds)) icons += "●";
+    if(data.hospitals.some(h => h.date === ds)) icons += "🏥";
+    if(data.medicines.some(md => md.start <= ds && (!md.end || md.end >= ds))) icons += "💊";
+
+    const isToday = ds === today();
+    const isSelected = ds === state.selectedDate;
+
+    html += `<div class="day ${d.getMonth()!==m?'other':''} ${isToday?'todayMark':''} ${isSelected?'selectedDay':''}" onclick="state.selectedDate='${ds}';renderCalendar();renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`;
+  }
+
+  $("calendar").innerHTML = html;
+
   if(!state.selectedDate) state.selectedDate = today();
   renderDay(state.selectedDate);
 }

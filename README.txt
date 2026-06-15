@@ -1,13 +1,11 @@
-MofuNote v1.8.2 Album Photo Size
+MofuNote v1.8.3 Calendar Selected Day Fix
 
 修正内容:
-- 写真アルバムの画像を全体表示しやすく修正
-- object-fit: contain に変更
-- アルバム写真高さを260pxに調整
-- v1.8.1のカレンダー日付ズレ修正は維持
+- カレンダーで今日の日付が緑のまま残る問題を修正
+- 選択中の日付だけ緑表示
+- 今日の日付は枠だけ表示
+- v1.8.2の写真アルバムサイズ修正は維持
+- v1.8.1のカレンダー日付ズレ修正も維持
 
 確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=182
-
-
-v1.8.3: カレンダーで選択した日付に色が付くように修正。
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=183
