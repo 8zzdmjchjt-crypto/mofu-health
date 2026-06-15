@@ -472,3 +472,17 @@ main{
 .album-card small{
   color:#75877b;
 }
+
+
+/* v1.8.2 album photo full-view fix */
+.album-card img{
+  width:100% !important;
+  height:260px !important;
+  object-fit:contain !important;
+  background:#fff !important;
+  display:block !important;
+}
+
+.album-card{
+  background:#fff !important;
+}

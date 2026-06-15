@@ -1,16 +1,10 @@
-MofuNote v1.8 Photo Album
+MofuNote v1.8.2 Album Photo Size
 
-変更内容:
-- 毎日の記録に「今日の写真」を追加
-- 写真は自動圧縮して保存
-- カレンダー日別記録に写真サムネイル表示
-- その他から「写真アルバム」を表示
-- ペットごとに日付順で写真一覧表示
-- v1.7.3の保存修正・写真保存修正は維持
-
-注意:
-- 写真は端末内(localStorage)に保存されます。
-- 容量が増えやすいため、まずは1日1枚で試してください。
+修正内容:
+- 写真アルバムの画像を全体表示しやすく修正
+- object-fit: contain に変更
+- アルバム写真高さを260pxに調整
+- v1.8.1のカレンダー日付ズレ修正は維持
 
 確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=18
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=182

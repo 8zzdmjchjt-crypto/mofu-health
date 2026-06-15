@@ -1,5 +1,11 @@
 const $=id=>document.getElementById(id);
-const today=()=>new Date().toISOString().slice(0,10);
+function localDateString(d=new Date()){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+const today=()=>localDateString(new Date());
 const STORE="mofunote_v13_empty_delete";
 let state={selectedPet:"moka",viewMonth:new Date(),selectedDate:today(),graph:"weight"};
 
@@ -176,7 +182,7 @@ $("medicineForm").onsubmit=e=>{e.preventDefault();data.medicines.push({petId:sta
 function renderHospitalList(){$("hospitalList").innerHTML=data.hospitals.filter(h=>h.petId===state.selectedPet).map(h=>`<div class="card list"><b>🏥 ${h.date} ${h.name}</b><br>${h.reason}<br><small>${h.cost}円 ${h.memo||""}</small></div>`).join("");}
 function renderMedicineList(){$("medicineList").innerHTML=data.medicines.filter(m=>m.petId===state.selectedPet).map(m=>`<div class="card list"><b>💊 ${m.name}</b><br>${m.dose}<br><small>${m.start}〜${m.end||"継続中"}</small></div>`).join("");}
 
-function renderCalendar(){let y=state.viewMonth.getFullYear(),m=state.viewMonth.getMonth();$("monthTitle").textContent=`${y}年${m+1}月`;let start=new Date(y,m,1-new Date(y,m,1).getDay());let html="";for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let ds=d.toISOString().slice(0,10);let icons="";if(Object.values(data.records).some(r=>r.date===ds))icons+="●";if(data.hospitals.some(h=>h.date===ds))icons+="🏥";if(data.medicines.some(md=>md.start<=ds&&(!md.end||md.end>=ds)))icons+="💊";html+=`<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''}" onclick="state.selectedDate='${ds}';renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`}$("calendar").innerHTML=html;renderDay(state.selectedDate);}
+function renderCalendar(){let y=state.viewMonth.getFullYear(),m=state.viewMonth.getMonth();$("monthTitle").textContent=`${y}年${m+1}月`;let start=new Date(y,m,1-new Date(y,m,1).getDay());let html="";for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let ds=localDateString(d);let icons="";if(Object.values(data.records).some(r=>r.date===ds))icons+="●";if(data.hospitals.some(h=>h.date===ds))icons+="🏥";if(data.medicines.some(md=>md.start<=ds&&(!md.end||md.end>=ds)))icons+="💊";html+=`<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''}" onclick="state.selectedDate='${ds}';renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`}$("calendar").innerHTML=html;renderDay(state.selectedDate);}
 function renderDay(ds){$("dayTitle").textContent=ds+" の記録";let html="";Object.values(data.records).filter(r=>r.date===ds).forEach(r=>{let p=pet(r.petId);html+=`<div class="pet-card">${avatar(p)}<b>${p.name}</b> ${r.weight||"-"}g${r.photo?`<br><img class="day-photo" src="${r.photo}">`:""}</div>`});$("dayList").innerHTML=html||'<p class="notice">記録はまだありません。</p>'}
 $("prevMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()-1);renderCalendar();}
 $("nextMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()+1);renderCalendar();}
@@ -667,4 +673,50 @@ if(typeof show === "function" && !window.__photoSaveFixWrappedV173){
     originalShowV173(view);
     setTimeout(applyPhotoSaveFixV173, 100);
   };
+}
+
+
+
+// v1.8.1 calendar local date fix
+function renderCalendar(){
+  const y = state.viewMonth.getFullYear();
+  const m = state.viewMonth.getMonth();
+  $("monthTitle").textContent = `${y}年${m+1}月`;
+
+  const firstDay = new Date(y, m, 1);
+  const start = new Date(y, m, 1 - firstDay.getDay());
+
+  let html = "";
+  for(let i=0; i<42; i++){
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const ds = localDateString(d);
+    let icons = "";
+
+    if(Object.values(data.records).some(r => r.date === ds)) icons += "●";
+    if(data.hospitals.some(h => h.date === ds)) icons += "🏥";
+    if(data.medicines.some(md => md.start <= ds && (!md.end || md.end >= ds))) icons += "💊";
+
+    html += `<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''}" onclick="state.selectedDate='${ds}';renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`;
+  }
+
+  $("calendar").innerHTML = html;
+
+  // 表示中の月に選択日がない場合だけ今日へ戻す
+  if(!state.selectedDate) state.selectedDate = today();
+  renderDay(state.selectedDate);
+}
+
+function renderDay(ds){
+  state.selectedDate = ds;
+  $("dayTitle").textContent = ds + " の記録";
+
+  let html = "";
+  Object.values(data.records)
+    .filter(r => r.date === ds)
+    .forEach(r => {
+      let p = pet(r.petId);
+      html += `<div class="pet-card">${avatar(p)}<b>${p.name}</b> ${r.weight||"-"}g${r.photo?`<br><img class="day-photo" src="${r.photo}">`:""}</div>`;
+    });
+
+  $("dayList").innerHTML = html || '<p class="notice">記録はまだありません。</p>';
 }
