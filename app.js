@@ -768,3 +768,24 @@ function renderDay(ds){
 
   $("dayList").innerHTML = html || '<p class="notice">記録はまだありません。</p>';
 }
+
+
+
+// v1.8.5 profile layout class helper
+function applyProfileLayoutV185(){
+  const photoInput = document.getElementById("photoInput");
+  if(photoInput){
+    const parent = photoInput.closest(".card");
+    if(parent) parent.classList.add("photo-register-box-clean");
+  }
+}
+window.addEventListener("load", applyProfileLayoutV185);
+setTimeout(applyProfileLayoutV185, 500);
+if(typeof show === "function" && !window.__profileLayoutWrappedV185){
+  window.__profileLayoutWrappedV185 = true;
+  const originalShowV185 = show;
+  show = function(view){
+    originalShowV185(view);
+    setTimeout(applyProfileLayoutV185, 100);
+  };
+}

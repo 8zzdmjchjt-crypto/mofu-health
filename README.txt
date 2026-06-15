@@ -1,11 +1,10 @@
-MofuNote v1.8.3 Calendar Selected Day Fix
+MofuNote v1.8.5 Profile Layout Fix
 
 修正内容:
-- カレンダーで今日の日付が緑のまま残る問題を修正
-- 選択中の日付だけ緑表示
-- 今日の日付は枠だけ表示
-- v1.8.2の写真アルバムサイズ修正は維持
-- v1.8.1のカレンダー日付ズレ修正も維持
+- プロフィールカードの上下余白を追加
+- 写真登録部分の外枠を削除
+- プロフィール保存ボタンを少し下へ調整
+- v1.8.4までの機能は維持
 
 確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=183
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=185

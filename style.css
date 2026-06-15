@@ -537,3 +537,63 @@ main{
   margin-left:8px !important;
   margin-right:8px !important;
 }
+
+
+/* v1.8.5 profile layout fine tune */
+
+/* プロフィールカード内の上下余白を追加 */
+#profileView .card{
+  padding-top:18px !important;
+  padding-bottom:18px !important;
+}
+
+/* プロフィール写真まわりに余白 */
+#profileView .profile-img{
+  margin-top:4px !important;
+  margin-bottom:22px !important;
+}
+
+/* 表の端にも少し余白 */
+#profileView .card .row:first-of-type{
+  margin-top:4px !important;
+}
+#profileView .card .row:last-of-type{
+  margin-bottom:10px !important;
+}
+
+/* 写真登録部分の外枠を消す */
+#profileView .photo-register-box-clean{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:4px 0 14px 0 !important;
+  margin-top:4px !important;
+  margin-bottom:12px !important;
+}
+
+#profileView input[type="file"],
+#photoInput{
+  border:none !important;
+  background:transparent !important;
+  padding:10px 0 !important;
+  max-width:100% !important;
+}
+
+/* 写真削除ボタンは白いボタンとして残す */
+#removePhoto{
+  border:1px solid var(--line) !important;
+  background:#fff !important;
+  border-radius:16px !important;
+  padding:10px 14px !important;
+}
+
+/* 誕生日・お迎え日欄の間隔 */
+#profileView .formline{
+  margin-top:14px !important;
+}
+
+/* 保存ボタンを少し下へ */
+#saveProfile{
+  margin-top:28px !important;
+  margin-bottom:120px !important;
+}
