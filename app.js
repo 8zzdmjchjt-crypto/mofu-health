@@ -789,3 +789,30 @@ if(typeof show === "function" && !window.__profileLayoutWrappedV185){
     setTimeout(applyProfileLayoutV185, 100);
   };
 }
+
+
+
+// v1.8.6 photo UI balance helper
+function applyPhotoUIBalanceV186(){
+  const input = document.getElementById("photoInput");
+  const remove = document.getElementById("removePhoto");
+  if(input){
+    input.classList.add("photo-input-balanced");
+    const wrap = input.closest(".card") || input.parentElement;
+    if(wrap) wrap.classList.add("photo-ui-balanced");
+  }
+  if(remove){
+    remove.classList.add("photo-remove-subtle");
+    remove.textContent = "写真を削除";
+  }
+}
+window.addEventListener("load", applyPhotoUIBalanceV186);
+setTimeout(applyPhotoUIBalanceV186, 500);
+if(typeof show === "function" && !window.__photoUIBalanceWrappedV186){
+  window.__photoUIBalanceWrappedV186 = true;
+  const originalShowV186 = show;
+  show = function(view){
+    originalShowV186(view);
+    setTimeout(applyPhotoUIBalanceV186, 100);
+  };
+}
