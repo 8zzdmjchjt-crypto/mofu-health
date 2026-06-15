@@ -8,3 +8,6 @@ MofuNote v1.8.2 Album Photo Size
 
 確認URL:
 https://8zzdmjchjt-crypto.github.io/mofu-health/?v=182
+
+
+v1.8.3: カレンダーで選択した日付に色が付くように修正。

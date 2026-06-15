@@ -696,7 +696,7 @@ function renderCalendar(){
     if(data.hospitals.some(h => h.date === ds)) icons += "🏥";
     if(data.medicines.some(md => md.start <= ds && (!md.end || md.end >= ds))) icons += "💊";
 
-    html += `<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''}" onclick="state.selectedDate='${ds}';renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`;
+    html += `<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''} ${ds===state.selectedDate?'selected':''}" onclick="state.selectedDate='${ds}';renderCalendar()">${d.getDate()}<div class="day-icons">${icons}</div></div>`;
   }
 
   $("calendar").innerHTML = html;

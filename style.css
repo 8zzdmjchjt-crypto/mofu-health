@@ -486,3 +486,14 @@ main{
 .album-card{
   background:#fff !important;
 }
+
+
+/* v1.8.3: selected calendar day highlight */
+.day.selected{
+  background:var(--green)!important;
+  color:#fff;
+  border-color:var(--green);
+}
+.day.selected .day-icons{
+  color:#fff;
+}
