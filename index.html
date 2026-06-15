@@ -11,7 +11,7 @@
 <body>
 <div id="app">
 <header>
-  <div><div class="brand">🐾 モフノート</div><div class="sub">小動物の健康記録アプリ v1.7.3</div></div>
+  <div><div class="brand">🐾 モフノート</div><div class="sub">小動物の健康記録アプリ v1.8</div></div>
   <button id="openPetDialog" class="round">＋</button>
 </header>
 
@@ -46,6 +46,12 @@
     <label>部屋んぽ時間(分)<input id="walkMinutes" type="number"></label>
     <label>温度(℃)<input id="temp" type="number" step="0.1"></label>
     <label>湿度(%)<input id="humidity" type="number"></label>
+    <h2>今日の写真</h2>
+    <div class="record-photo-box">
+      <div id="recordPhotoPreview" class="record-photo-preview">写真なし</div>
+      <input id="recordPhotoInput" type="file" accept="image/*">
+      <button id="removeRecordPhoto" type="button" class="secondary">今日の写真を削除</button>
+    </div>
     <label class="memo">メモ<textarea id="memo"></textarea></label>
     <button class="primary" type="submit">保存</button>
   </form>
@@ -89,6 +95,13 @@
   <div id="medicineList"></div>
 </section>
 
+
+<section id="albumView" class="view">
+  <h1>写真アルバム</h1>
+  <div id="albumTabs" class="tabs"></div>
+  <div id="albumList" class="album-grid"></div>
+</section>
+
 <section id="graphView" class="view">
   <h1>グラフ</h1>
   <div id="graphTabs" class="tabs"></div>
@@ -102,6 +115,7 @@
   <button class="menu" onclick="show('profileView')">🐭 プロフィール・写真・アイコン</button>
   <button class="menu dangerMenu" onclick="deleteSelectedPet()">🗑 選択中のペットを削除</button>
   <button class="menu" onclick="show('medicalView')">🏥 通院・投薬記録</button>
+  <button class="menu" onclick="show('albumView')">📷 写真アルバム</button>
   <button id="exportBtn" class="menu">⬇ データを書き出す</button>
   <button id="resetBtn" class="menu">🗑 すべて削除して空に戻す</button>
   <p class="notice">このアプリは記録用です。診断や治療の代わりにはなりません。</p>

@@ -67,7 +67,7 @@ function show(view){
  if(view==="homeView")renderHome();
  if(view==="calendarView")renderCalendar();
  if(view==="recordView")renderRecord();
- if(view==="graphView")renderGraph();
+ if(view==="albumView")renderAlbum(); if(view==="graphView")renderGraph();
  if(view==="profileView")renderProfile();
  if(view==="medicalView")renderMedical();
  if(view==="moreView")renderMore();
@@ -99,6 +99,46 @@ show("homeView");
 showToast(name+"を追加しました🐾");
 };
 
+
+function compressRecordPhoto(file, callback){
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxSize = 520;
+      let w = img.width;
+      let h = img.height;
+      if(w > h && w > maxSize){
+        h = Math.round(h * maxSize / w);
+        w = maxSize;
+      }else if(h >= w && h > maxSize){
+        w = Math.round(w * maxSize / h);
+        h = maxSize;
+      }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL("image/jpeg", 0.72));
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+let currentRecordPhoto = "";
+
+function updateRecordPhotoPreview(){
+  const box = $("recordPhotoPreview");
+  if(!box) return;
+  if(currentRecordPhoto){
+    box.innerHTML = `<img src="${currentRecordPhoto}">`;
+  }else{
+    box.textContent = "写真なし";
+  }
+}
+
 function renderRecord(){
  let p=pet(state.selectedPet);
  if(!p){show("homeView");return;}
@@ -106,9 +146,23 @@ function renderRecord(){
  $("recordDate").value=state.selectedDate;
  loadRecord();
 }
-function loadRecord(){let r=data.records[state.selectedPet+"_"+$("recordDate").value]||{};["weight","sandMinutes","walkMinutes","temp","humidity","memo"].forEach(id=>$(id).value=r[id]||"");["appetite","energy","poop"].forEach(id=>{if(r[id])$(id).value=r[id]});$("sandBath").checked=!!r.sandBath;$("walk").checked=!!r.walk;}
+function loadRecord(){let r=data.records[state.selectedPet+"_"+$("recordDate").value]||{};["weight","sandMinutes","walkMinutes","temp","humidity","memo"].forEach(id=>$(id).value=r[id]||"");["appetite","energy","poop"].forEach(id=>{if(r[id])$(id).value=r[id]});$("sandBath").checked=!!r.sandBath;$("walk").checked=!!r.walk;currentRecordPhoto=r.photo||"";updateRecordPhotoPreview();}
 $("recordDate").onchange=loadRecord;
-$("recordForm").onsubmit=e=>{e.preventDefault();let ds=$("recordDate").value||today();data.records[state.selectedPet+"_"+ds]={petId:state.selectedPet,date:ds,weight:Number($("weight").value)||0,appetite:$("appetite").value,energy:$("energy").value,poop:$("poop").value,sandBath:$("sandBath").checked,sandMinutes:Number($("sandMinutes").value)||0,walk:$("walk").checked,walkMinutes:Number($("walkMinutes").value)||0,temp:Number($("temp").value)||0,humidity:Number($("humidity").value)||0,memo:$("memo").value};save();showToast("保存しました");show("homeView");}
+$("recordPhotoInput").onchange=(e)=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  compressRecordPhoto(file,(dataUrl)=>{
+    currentRecordPhoto=dataUrl;
+    updateRecordPhotoPreview();
+    showToast("写真を追加しました📷");
+  });
+};
+$("removeRecordPhoto").onclick=()=>{
+  currentRecordPhoto="";
+  updateRecordPhotoPreview();
+  showToast("今日の写真を削除しました");
+};
+$("recordForm").onsubmit=e=>{e.preventDefault();let ds=$("recordDate").value||today();data.records[state.selectedPet+"_"+ds]={petId:state.selectedPet,date:ds,weight:Number($("weight").value)||0,appetite:$("appetite").value,energy:$("energy").value,poop:$("poop").value,sandBath:$("sandBath").checked,sandMinutes:Number($("sandMinutes").value)||0,walk:$("walk").checked,walkMinutes:Number($("walkMinutes").value)||0,temp:Number($("temp").value)||0,humidity:Number($("humidity").value)||0,memo:$("memo").value,photo:currentRecordPhoto};save();showToast("保存しました");show("homeView");}
 
 function renderTabs(id, cb){$(id).innerHTML=data.pets.map(p=>`<button class="${p.id===state.selectedPet?'active':''}" data-id="${p.id}">${p.name}</button>`).join("");$(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{state.selectedPet=b.dataset.id;cb();});}
 function renderProfile(){renderTabs("profileTabs",renderProfile);let p=pet(state.selectedPet);$("profileCard").innerHTML=`<div class="profile-img">${p.photo?`<img src="${p.photo}">`:`<img src="${p.icon}">`}</div><div class="row"><span>名前</span><b>${p.name}</b></div><div class="row"><span>種類</span><b>${p.type}</b></div><div class="row"><span>性別</span><b>${p.sex}</b></div><div class="row"><span>誕生日</span><b>${p.birthday||"未設定"}</b></div><div class="row"><span>年齢</span><b>${ageText(p.birthday)}</b></div><div class="row"><span>お迎え</span><b>${p.adoptionDate||"未設定"}</b></div><button class="danger" onclick="deleteSelectedPet()">このペットを削除</button>`;$("birthday").value=p.birthday||"";$("adoptionDate").value=p.adoptionDate||"";$("iconGrid").innerHTML=iconChoices.map(i=>`<button class="${p.icon===i.file?'selectedIcon':''}" data-file="${i.file}"><img src="${i.file}">${i.label}</button>`).join("");$("iconGrid").querySelectorAll("button").forEach(b=>b.onclick=()=>{p.icon=b.dataset.file;p.photo="";save();renderProfile();renderHome();});}
@@ -123,12 +177,35 @@ function renderHospitalList(){$("hospitalList").innerHTML=data.hospitals.filter(
 function renderMedicineList(){$("medicineList").innerHTML=data.medicines.filter(m=>m.petId===state.selectedPet).map(m=>`<div class="card list"><b>💊 ${m.name}</b><br>${m.dose}<br><small>${m.start}〜${m.end||"継続中"}</small></div>`).join("");}
 
 function renderCalendar(){let y=state.viewMonth.getFullYear(),m=state.viewMonth.getMonth();$("monthTitle").textContent=`${y}年${m+1}月`;let start=new Date(y,m,1-new Date(y,m,1).getDay());let html="";for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let ds=d.toISOString().slice(0,10);let icons="";if(Object.values(data.records).some(r=>r.date===ds))icons+="●";if(data.hospitals.some(h=>h.date===ds))icons+="🏥";if(data.medicines.some(md=>md.start<=ds&&(!md.end||md.end>=ds)))icons+="💊";html+=`<div class="day ${d.getMonth()!==m?'other':''} ${ds===today()?'today':''}" onclick="state.selectedDate='${ds}';renderDay('${ds}')">${d.getDate()}<div class="day-icons">${icons}</div></div>`}$("calendar").innerHTML=html;renderDay(state.selectedDate);}
-function renderDay(ds){$("dayTitle").textContent=ds+" の記録";let html="";Object.values(data.records).filter(r=>r.date===ds).forEach(r=>{let p=pet(r.petId);html+=`<div class="pet-card">${avatar(p)}<b>${p.name}</b> ${r.weight||"-"}g</div>`});$("dayList").innerHTML=html||'<p class="notice">記録はまだありません。</p>'}
+function renderDay(ds){$("dayTitle").textContent=ds+" の記録";let html="";Object.values(data.records).filter(r=>r.date===ds).forEach(r=>{let p=pet(r.petId);html+=`<div class="pet-card">${avatar(p)}<b>${p.name}</b> ${r.weight||"-"}g${r.photo?`<br><img class="day-photo" src="${r.photo}">`:""}</div>`});$("dayList").innerHTML=html||'<p class="notice">記録はまだありません。</p>'}
 $("prevMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()-1);renderCalendar();}
 $("nextMonth").onclick=()=>{state.viewMonth.setMonth(state.viewMonth.getMonth()+1);renderCalendar();}
 
 document.querySelectorAll(".switch button").forEach(b=>b.onclick=()=>{state.graph=b.dataset.graph;document.querySelectorAll(".switch button").forEach(x=>x.classList.toggle("active",x===b));renderGraph();});
 
+
+
+function renderAlbum(){
+  renderTabs("albumTabs", renderAlbum);
+  const p = pet(state.selectedPet);
+  if(!p){ return; }
+
+  const photos = Object.values(data.records)
+    .filter(r => r.petId === state.selectedPet && r.photo)
+    .sort((a,b) => b.date.localeCompare(a.date));
+
+  if(!photos.length){
+    $("albumList").innerHTML = `<div class="card empty"><h2>📷 写真はまだありません</h2><p>記録画面で「今日の写真」を追加すると、ここに表示されます。</p></div>`;
+    return;
+  }
+
+  $("albumList").innerHTML = photos.map(r => `
+    <div class="album-card">
+      <img src="${r.photo}">
+      <div><b>${r.date}</b><br><small>${r.weight? r.weight+"g" : ""} ${r.memo||""}</small></div>
+    </div>
+  `).join("");
+}
 
 function renderGraph(){
   renderTabs("graphTabs", renderGraph);

@@ -414,3 +414,61 @@ main{
   opacity:1;
   transform:translateX(-50%) translateY(0);
 }
+
+
+/* v1.8 daily photo + album */
+.record-photo-box{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:14px;
+  display:grid;
+  gap:10px;
+  box-shadow:0 10px 22px rgba(70,110,80,.08);
+}
+.record-photo-preview{
+  height:180px;
+  border-radius:18px;
+  background:var(--mint);
+  display:grid;
+  place-items:center;
+  color:#75877b;
+  font-weight:900;
+  overflow:hidden;
+}
+.record-photo-preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.day-photo{
+  width:90px;
+  height:70px;
+  object-fit:cover;
+  border-radius:14px;
+  margin-top:8px;
+  display:block;
+}
+.album-grid{
+  display:grid;
+  gap:12px;
+}
+.album-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 10px 22px rgba(70,110,80,.08);
+}
+.album-card img{
+  width:100%;
+  height:210px;
+  object-fit:cover;
+  display:block;
+}
+.album-card div{
+  padding:12px 14px;
+}
+.album-card small{
+  color:#75877b;
+}
