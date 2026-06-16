@@ -11,7 +11,7 @@
 <body>
 <div id="app">
 <header>
-  <div><div class="brand">🐾 モフノート</div><div class="sub">小動物の健康記録アプリ v1.8.6</div></div>
+  <div><div class="brand">🐾 モフノート</div><div class="sub">小動物の健康記録アプリ v1.9</div></div>
   <button id="openPetDialog" class="round">＋</button>
 </header>
 
@@ -117,6 +117,8 @@
   <button class="menu" onclick="show('medicalView')">🏥 通院・投薬記録</button>
   <button class="menu" onclick="show('albumView')">📷 写真アルバム</button>
   <button id="exportBtn" class="menu">⬇ データを書き出す</button>
+  <button id="importBtn" class="menu">⬆️ データを復元</button>
+  <input id="importFile" type="file" accept="application/json,.json" style="display:none">
   <button id="resetBtn" class="menu">🗑 すべて削除して空に戻す</button>
   <p class="notice">このアプリは記録用です。診断や治療の代わりにはなりません。</p>
 </section>

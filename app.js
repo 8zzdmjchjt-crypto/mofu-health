@@ -816,3 +816,100 @@ if(typeof show === "function" && !window.__photoUIBalanceWrappedV186){
     setTimeout(applyPhotoUIBalanceV186, 100);
   };
 }
+
+
+
+// v1.9 data restore
+function normalizeRestoreDataV19(obj){
+  if(!obj || typeof obj !== "object") return null;
+  if(Array.isArray(obj.pets) && obj.records){
+    return {
+      pets: obj.pets || [],
+      records: obj.records || {},
+      hospitals: obj.hospitals || [],
+      medicines: obj.medicines || []
+    };
+  }
+  if(obj.data && Array.isArray(obj.data.pets)){
+    return {
+      pets: obj.data.pets || [],
+      records: obj.data.records || {},
+      hospitals: obj.data.hospitals || [],
+      medicines: obj.data.medicines || []
+    };
+  }
+  return null;
+}
+
+function applyImportExportV19(){
+  const importBtn = document.getElementById("importBtn");
+  const importFile = document.getElementById("importFile");
+
+  if(importBtn && importFile && !importBtn.dataset.restoreV19){
+    importBtn.dataset.restoreV19 = "1";
+    importBtn.onclick = () => {
+      if(!confirm("バックアップファイルから復元しますか？\n現在のデータは上書きされます。")) return;
+      importFile.value = "";
+      importFile.click();
+    };
+
+    importFile.onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const parsed = JSON.parse(reader.result);
+          const restored = normalizeRestoreDataV19(parsed);
+          if(!restored){
+            alert("復元できないファイルです。モフノートのバックアップJSONを選んでください。");
+            return;
+          }
+          data = restored;
+          localStorage.setItem(STORE, JSON.stringify(data));
+          showToast("データを復元しました✅");
+          setTimeout(() => {
+            location.href = location.pathname + "?v=19restore" + Date.now();
+          }, 900);
+        }catch(err){
+          console.error(err);
+          alert("JSONファイルの読み込みに失敗しました。");
+        }
+      };
+      reader.readAsText(file);
+    };
+  }
+
+  const exportBtn = document.getElementById("exportBtn");
+  if(exportBtn && !exportBtn.dataset.exportV19){
+    exportBtn.dataset.exportV19 = "1";
+    exportBtn.onclick = () => {
+      const backup = {
+        app: "MofuNote",
+        version: "1.9",
+        exportedAt: new Date().toISOString(),
+        data: data
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      const date = (typeof localDateString === "function") ? localDateString(new Date()) : new Date().toISOString().slice(0,10);
+      a.href = URL.createObjectURL(blob);
+      a.download = "mofunote_backup_" + date + ".json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast("データを書き出しました✅");
+    };
+  }
+}
+
+window.addEventListener("load", applyImportExportV19);
+setTimeout(applyImportExportV19, 500);
+if(typeof show === "function" && !window.__restoreWrappedV19){
+  window.__restoreWrappedV19 = true;
+  const originalShowV19 = show;
+  show = function(view){
+    originalShowV19(view);
+    setTimeout(applyImportExportV19, 100);
+  };
+}

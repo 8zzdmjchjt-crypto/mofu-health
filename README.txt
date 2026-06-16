@@ -1,11 +1,12 @@
-MofuNote v1.8.6 Photo UI Balance
+MofuNote v1.9 Restore Data
 
-修正内容:
-- 写真登録まわりのバランスを調整
-- ファイル選択を見やすいボタン風に変更
-- 写真削除を目立ちすぎない小さめリンク風に変更
-- 誕生日・お迎え日との余白を調整
-- v1.8.5までの機能は維持
+追加内容:
+- 「その他」画面に データを復元 を追加
+- JSONバックアップファイルから復元
+- 復元前に確認ダイアログ表示
+- 復元後に画面再読み込み
+- データ書き出しのファイル名を日付付きに調整
+- v1.8.6までの機能は維持
 
 確認URL:
-https://8zzdmjchjt-crypto.github.io/mofu-health/?v=186
+https://8zzdmjchjt-crypto.github.io/mofu-health/?v=19

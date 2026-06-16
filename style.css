@@ -651,3 +651,9 @@ main{
 #profileView .formline{
   margin-top:16px !important;
 }
+
+/* v1.9 restore button */
+#importBtn{
+  color:#47715a !important;
+  font-weight:900 !important;
+}
